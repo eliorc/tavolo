@@ -34,7 +34,7 @@ Notice, that these layers can also be used with low-level TensorFlow code
 
 ## Modules
 
-### [`embeddings`](tavolo/embeddings)
+### `embeddings`
 
 Layers applied to embeddings
 
@@ -42,7 +42,7 @@ Layers applied to embeddings
 | ------------------------------ | ------------------------------------------------------------------------- | -------------------------------- |
 | `PositionalEncoding`           | (batch_size, time_steps, channels) -> (batch_size, time_steps, channels)  | https://arxiv.org/abs/1706.03762 |
 
-### [`normalization`](tavolo/normalization)
+### `normalization`
 
 Normalization techniques
 
@@ -50,7 +50,7 @@ Normalization techniques
 | ------------------------------ | ------------------------------------------------  | -------------------------------- |
 | `LayerNorm`                    | (batch_size, channels) -> (batch_size, channels)  | https://arxiv.org/abs/1607.06450 |
 
-### [`seq2seq`](tavolo/seq2seq)
+### `seq2seq`
 
 Layers mapping sequences to sequences
 
@@ -58,7 +58,7 @@ Layers mapping sequences to sequences
 | ------------------------------ | ------------------------------------------------------------------------- | -------------------------------- |
 | `MultiHeadedSelfAttention`     | (batch_size, time_steps, channels) -> (batch_size, time_steps, channels)  | https://arxiv.org/abs/1706.03762 |
 
-### [`seq2vec`](tavolo/seq2vec)
+### `seq2vec`
 
 Layers mapping sequences to vectors
 
