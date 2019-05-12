@@ -1,2 +1,4 @@
 numpy
-tensorflow
+tensorflow==2.0.0-alpha0
+pytest
+pytest-cov

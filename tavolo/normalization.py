@@ -47,7 +47,7 @@ class LayerNorm(tf.keras.layers.Layer):
     def call(self, inputs,
              **kwargs) -> tf.Tensor:
         # Calculate mean and variance
-        mean, variance = tf.nn.moments(inputs, axes=-1, keep_dims=True)  # shape=(batch_size, 1)
+        mean, variance = tf.nn.moments(inputs, axes=-1, keepdims=True)  # shape=(batch_size, 1)
 
         # Normalize
         normalized = (inputs - mean) / ((variance + self.epsilon) ** .5)  # shape=(batch_size, channels)
