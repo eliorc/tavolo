@@ -122,7 +122,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
             causality_mask = tf.linalg.LinearOperatorLowerTriangular(
                 causality_mask).to_dense()  # shape=(time_steps, time_steps)
             causality_mask = tf.tile(tf.expand_dims(  # shape=(batch_size * n_heads, time_steps, time_steps)
-                causality_mask, axis=1), multiples=(tf.shape(QK)[0], 1, 1))
+                causality_mask, axis=0), multiples=(tf.shape(QK)[0], 1, 1))
 
             padding = tf.ones_like(QK) * self.very_small_value
             QK = tf.where(tf.equal(causality_mask, False), padding,
