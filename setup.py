@@ -1,8 +1,7 @@
 from setuptools import setup
-import tavolo
 
-setup(name=tavolo.__name__,
-      version=tavolo.__version__,
+setup(name='tavolo',
+      version='0.1.0',
       description='Collection of deep learning modules and layers for the TensorFlow framework',
       url='https://github.com/eliorc/tavolo',
       author='Elior Cohen',
@@ -10,4 +9,4 @@ setup(name=tavolo.__name__,
       packages=['tavolo'],
       install_requires=[
           'numpy',
-          'tensorflow'])
+          'tensorflow>=2.0.0-alpha0'])
