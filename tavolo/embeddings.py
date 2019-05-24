@@ -29,7 +29,16 @@ class PositionalEncoding(tf.keras.layers.Layer):
         :param normalize_factor: Normalize factor
         :param name: Layer name
         """
-        super(PositionalEncoding, self).__init__(name=name, **kwargs)
+        super().__init__(name=name, **kwargs)
+
+        # Error checking
+        if max_sequence_length < 1:
+            raise ValueError(
+                'max_sequence_length must be greater than zero. (value provided {})'.format(max_sequence_length))
+
+        if embedding_dim < 1:
+            raise ValueError(
+                'embedding_dim must be greater than zero. (value provided {})'.format(max_sequence_length))
 
         # First part of the PE function: sin and cos argument
         self.positional_encoding = np.array([

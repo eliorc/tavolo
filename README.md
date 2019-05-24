@@ -12,7 +12,7 @@ All the implementation are classes that inherit from `tf.keras.Layer` for ease-o
 `tavolo`'s layers are just like normal `tf.keras.layers`, simply import and use.
 
 ```python
-import tavolo as tlo
+import tavolo as tvl
 import tensorflow as tf
 
 .
@@ -21,7 +21,7 @@ import tensorflow as tf
 model = tf.keras.Sequential([
     ..,
     ..,
-    tlo.normalization.LayerNorm(),  # <-- Just like any tf.keras layer
+    tvl.normalization.LayerNorm(),  # <-- Just like any tf.keras layer
     ..,
 ])
 
@@ -70,3 +70,4 @@ Layers mapping sequences to vectors
 ## TODO
 - [ ] Write tests
 - [ ] Contribution guide (shapes, tests)
+- [ ] Write thank yous to code sources
