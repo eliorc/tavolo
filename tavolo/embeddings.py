@@ -1,7 +1,3 @@
-"""
-Layers applied to embeddings
-"""
-
 from typing import Optional
 
 import numpy as np
@@ -9,23 +5,75 @@ import tensorflow as tf
 
 
 class PositionalEncoding(tf.keras.layers.Layer):
+    """
+    ``PositionalEncoding``
+    ======================
+
+    Create a positional encoding layer, usually added on top of an embedding layer.
+    Embeds information about the position of the elements using the formula
+
+    .. math::
+
+        PE[pos,2i]=sin\\left(\\frac{pos}{normalize\\_factor^{\\frac{2i}{embedding\\_dim}}}\\right)
+
+        PE[pos,2i+1]=cos\\left(\\frac{pos}{normalize\\_factor^{\\frac{2i}{embedding\\_dim}}}\\right)
+
+
+    The resulting embedding gets added (point-wise) to the input.
+
+
+    Arguments
+    ---------
+
+    | ``max_sequence_length`` (``int``): Maximum sequence length of input
+    | ``embedding_dim`` (``int``): Dimensionality of the of the input's last dimension
+    | ``normalize_factor`` (``float``): Normalize factor
+    | ``name`` (``str``): Layer name
+
+
+    Input shape
+    -----------
+
+    (batch_size, time_steps, channels) where time_steps equals to the ``max_sequence_length`` and channels to ``embedding_dim``
+
+
+    Output shape
+    ------------
+
+    Same shape as input.
+
+
+    Examples
+    --------
+
+    .. code-block:: python3
+
+        import tensorflow as tf
+        import tavolo as tvl
+
+        model = tf.keras.Sequential([tf.keras.layers.Embedding(vocab_size, 8, input_length=max_sequence_length),
+                                     tvl.embeddings.PositionalEncoding(max_sequence_length=max_sequence_length,
+                                                                       embedding_dim=8)])  # Add positional encoding
+
+
+    References
+    ----------
+    `Attention Is All You Need`_
+
+
+    .. _Attention Is All You Need:
+        https://arxiv.org/abs/1706.03762
+    """
 
     def __init__(self,
                  max_sequence_length: int,
                  embedding_dim: int,
-                 normalize_factor: Optional[float] = 10000,
+                 normalize_factor: Optional[float] = 10_000,
                  name: Optional[str] = 'positional_encoding',
                  **kwargs):
         """
-        Adds positional encoding using sin and cos
-
-        Input dimensions: (batch_size, time_steps, channels)
-        Output dimensions: (batch_size, time_steps, channels)
-
-        Reference: Reference: https://arxiv.org/abs/1706.03762
-
-        :param max_sequence_length: Maximum allowed sequence length
-        :param embedding_dim: Embedding dimension
+        :param max_sequence_length: Maximum sequence length of input
+        :param embedding_dim: Dimensionality of the of the input's last dimension
         :param normalize_factor: Normalize factor
         :param name: Layer name
         """

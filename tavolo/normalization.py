@@ -1,25 +1,61 @@
-"""
-Normalization techniques
-"""
-
 from typing import Optional
 
 import tensorflow as tf
 
 
 class LayerNorm(tf.keras.layers.Layer):
+    """
+    ``LayerNorm``
+    =============
+
+    Apply layer normalization
+
+
+    Arguments
+    ---------
+
+    | ``epsilon`` (``float``): Small number to avoid division by zero
+    | ``name`` (``str``): Layer name
+
+
+    Input shape
+    -----------
+
+    Arbitrary. Use the keyword argument `input_shape` (tuple of integers, does not include the samples axis) when
+    using this layer as the first layer in a model.
+
+
+    Output shape
+    ------------
+
+    Same shape as input.
+
+
+    Examples
+    --------
+
+    .. code-block:: python3
+
+        import tensorflow as tf
+        import tavolo as tvl
+
+        model = tf.keras.Sequential([SomeLayer(),
+                                     tvl.normalization.LayerNorm()])  # Apply layer normalization on SomeLayer's output
+
+
+    References
+    ----------
+    `Layer Normalization`_
+
+
+    .. _Layer Normalization:
+        https://arxiv.org/pdf/1607.06450
+    """
 
     def __init__(self, epsilon: Optional[float] = 1e-8,
                  name: Optional[str] = 'layer_norm',
                  **kwargs):
         """
-        Apply layer norm
-
-        Input dimensions: (batch_size, channels)
-        Output dimensions: (batch_size, channels)
-
-        Reference: https://arxiv.org/abs/1607.06450
-
         :param epsilon: Small number to avoid division by zero
         :param name: Layer name
         """
