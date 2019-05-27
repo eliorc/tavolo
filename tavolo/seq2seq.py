@@ -1,13 +1,72 @@
-"""
-Layers mapping sequences to sequences
-"""
-
 from typing import Optional
 
 import tensorflow as tf
 
 
 class MultiHeadedSelfAttention(tf.keras.layers.Layer):
+    """
+    ``MultiHeadedSelfAttention``
+    ============================
+    
+    Applies (multi headed) self attention, taken from the Transformer
+    
+    
+    Arguments
+    ---------
+    
+    - `n_heads` (``int``): Number of attention heads
+    - `n_units` (``int``): Number of units (sum of units of all heads), defaults to the last dimension of the input
+    - `dropout_rate` (``float``): Rate of outputs to drop in the range [0, 1]
+    - `causality` (``bool``): Use causality (make each time point in output dependent only on previous timepoints of input)
+    - `name` (``str``): Layer name
+    
+    
+    Input shape
+    -----------
+    
+    (batch_size, time_steps, channels)
+    
+    
+    Output shape
+    ------------
+    
+    Same shape as input.
+    
+    
+    Examples
+    --------
+
+    Apply a 4 headed (default) self attention
+    
+    .. code-block:: python3
+    
+        import tensorflow as tf
+        import tavolo as tvl
+    
+
+        model = tf.keras.Sequential([tf.keras.layers.Embedding(vocab_size, 8, input_length=max_sequence_length),
+                                     tvl.seq2seq.MultiHeadedSelfAttention()])
+
+
+    Apply a single headed self attention
+
+    .. code-block:: python3
+
+        import tensorflow as tf
+        import tavolo as tvl
+
+
+        model = tf.keras.Sequential([tf.keras.layers.Embedding(vocab_size, 8, input_length=max_sequence_length),
+                                     tvl.seq2seq.MultiHeadedSelfAttention(n_heads=1)])
+
+    References
+    ----------
+    `Attention Is All You Need`_
+
+
+    .. _Attention Is All You Need:
+        https://arxiv.org/abs/1706.03762
+    """
 
     def __init__(self,
                  n_heads: Optional[int] = 4,
@@ -26,8 +85,8 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
 
         :param n_heads: Number of attention heads
         :param n_units: Number of units (sum of units of all heads), defaults to the last dimension of the input
-        :param dropout_rate: Rate of outputs to drop (will assign the alphas chosen to zero)
-        :param causality: Use causality
+        :param dropout_rate: Rate of outputs to drop in the range [0, 1]
+        :param causality: Use causality (make each time point in output dependent only on previous timepoints of input)
         :param name: Layer name
         """
 

@@ -10,8 +10,15 @@ Welcome to tavolo's documentation!
    :maxdepth: 1
    :caption: Contents:
 
-   normalization
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Modules
+
    embeddings
+   normalization
+   seq2seq
 
 
 
