@@ -25,10 +25,10 @@ class PositionalEncoding(tf.keras.layers.Layer):
     Arguments
     ---------
 
-    | ``max_sequence_length`` (``int``): Maximum sequence length of input
-    | ``embedding_dim`` (``int``): Dimensionality of the of the input's last dimension
-    | ``normalize_factor`` (``float``): Normalize factor
-    | ``name`` (``str``): Layer name
+    - `max_sequence_length` (``int``): Maximum sequence length of input
+    - `embedding_dim` (``int``): Dimensionality of the of the input's last dimension
+    - `normalize_factor` (``float``): Normalize factor
+    - `name` (``str``): Layer name
 
 
     Input shape
