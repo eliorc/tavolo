@@ -107,5 +107,13 @@ class PositionalEncoding(tf.keras.layers.Layer):
     def compute_mask(self, inputs, mask=None):
         return mask
 
-    def call(self, input, **kwargs) -> tf.Tensor:
-        return input + self.positional_encoding  # shape=(batch_size, time_steps, channels)
+    def call(self, inputs,
+             mask: Optional[tf.Tensor] = None,
+             **kwargs) -> tf.Tensor:
+
+
+        output = inputs + self.positional_encoding
+        if mask is not None:
+            output = tf.where(tf.tile(tf.expand_dims(mask, axis=-1), multiples=[1, 1, inputs.shape[-1]]), output, inputs)
+
+        return output  # shape=(batch_size, time_steps, channels)
