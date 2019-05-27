@@ -14,8 +14,8 @@ class LayerNorm(tf.keras.layers.Layer):
     Arguments
     ---------
 
-    | ``epsilon`` (``float``): Small number to avoid division by zero
-    | ``name`` (``str``): Layer name
+    - `epsilon` (``float``): Small number to avoid division by zero
+    - `name` (``str``): Layer name
 
 
     Input shape
