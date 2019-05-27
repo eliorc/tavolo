@@ -114,7 +114,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
                              multiples=(
                                  1, tf.shape(query)[1], 1))  # shape=(batch_size * n_heads, time_steps, time_steps)
         padding = tf.ones_like(QK) * self.very_small_value  # This will make sure the padded part won't be attended
-        QK = tf.where(tf.equal(input_mask, False), padding, QK)  # shape=(n_heads * batch_size, time_steps, time_steps)
+        QK = tf.where(tf.equal(input_mask, False), padding, QK)  # shape=(batch_size * n_heads, time_steps, time_steps)
 
         # Causality
         if self.causality:
