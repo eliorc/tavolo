@@ -9,9 +9,6 @@
 Tavolo
 ======
 
-.. figure:: _static/logo.png
-    :align: center
-
 | `tavolo`_ aims to package together valuable modules and functionality written for `TensorFlow`_ high-level Keras API for ease of use.
 | You see, the deep learning world is moving fast, and new ideas keep on coming.
 | tavolo gathers implementations of these useful ideas from the community (by contribution, from `Kaggle`_ etc.)
@@ -20,10 +17,13 @@ Tavolo
 Showcase
 --------
 
+.. TODO - Add LayerNorm and MultiHeadedSelfAttention links
+
 | tavolo's API is straightforward and adopting its modules is as easy as it gets.
 | In tavolo, you'll find implementations for basic layers like ``LayerNorm`` to complex modules like the Transformer's
   ``MultiHeadedSelfAttention``.
 | For example, if we wanted to head a multi-headed attention mechanism into our model, it would look something like:
+|
 
 .. code-block:: python3
 
@@ -37,9 +37,9 @@ Showcase
         tf.keras.layers.Dense(n_hidden_units, activation='relu'),
         tf.keras.layers.Dense(1, activation='sigmoid')])
 
-.. TODO - | You are welcome continue to the :doc:`install` page, or explore the different modules available:
-
 .. _`tavolo`: https://github.com/eliorc/tavolo
 .. _`TensorFlow`: https://www.tensorflow.org/
 .. _`Kaggle`: https://www.kaggle.com
 .. _`tf.keras`: https://www.tensorflow.org/guide/keras
+
+.. TODO - Add links to documentation
