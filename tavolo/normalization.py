@@ -5,9 +5,6 @@ import tensorflow as tf
 
 class LayerNorm(tf.keras.layers.Layer):
     """
-    ``LayerNorm``
-    =============
-
     Apply layer normalization
 
 

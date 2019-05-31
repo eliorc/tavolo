@@ -10,4 +10,7 @@ Layers mapping sequences to sequences
 
 -------
 
+``MultiHeadedSelfAttention``
+++++++++++++++++++++++++++++
+
 .. automodule:: seq2seq.MultiHeadedSelfAttention

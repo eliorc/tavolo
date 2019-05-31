@@ -6,9 +6,6 @@ import tensorflow as tf
 
 class PositionalEncoding(tf.keras.layers.Layer):
     """
-    ``PositionalEncoding``
-    ======================
-
     Create a positional encoding layer, usually added on top of an embedding layer.
     Embeds information about the position of the elements using the formula
 

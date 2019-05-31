@@ -10,4 +10,7 @@ Modules related to embeddings
 
 -------
 
+``PositionalEncoding``
+++++++++++++++++++++++
+
 .. automodule:: embeddings.PositionalEncoding

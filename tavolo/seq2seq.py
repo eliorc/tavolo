@@ -5,9 +5,6 @@ import tensorflow as tf
 
 class MultiHeadedSelfAttention(tf.keras.layers.Layer):
     """
-    ``MultiHeadedSelfAttention``
-    ============================
-    
     Applies (multi headed) self attention, taken from the Transformer
     
     

@@ -10,4 +10,7 @@ Modules for applying normalization techniques
 
 -------
 
+``LayerNorm``
++++++++++++++
+
 .. automodule:: normalization.LayerNorm
