@@ -9,7 +9,47 @@ import tensorflow as tf
 
 class YangAttention(tf.keras.layers.Layer):
     """
-    Taken from https://github.com/ilivans/tf-rnn-attention/blob/master/attention.py
+    Applies attention using learned variables
+
+    Arguments
+    ---------
+
+    - `n_units` (``int``): Attention's variables units
+    - `name` (``str``): Layer name
+
+
+    Input shape
+    -----------
+
+    (batch_size, time_steps, channels)
+
+
+    Output shape
+    ------------
+
+    (batch_size, channels)
+
+
+    Examples
+    --------
+
+    .. code-block:: python3
+
+        import tensorflow as tf
+        import tavolo as tvl
+
+
+        model = tf.keras.Sequential([tf.keras.layers.Embedding(vocab_size, 8, input_length=max_sequence_length),
+                                     tvl.seq2vec.YangAttention()])
+
+
+    References
+    ----------
+    `Hierarchical Attention Networks for Document Classification`_
+
+
+    .. _Hierarchical Attention Networks for Document Classification: https://www.cs.cmu.edu/~./hovy/papers/16HLT-hierarchical-attention-networks.pdf
+
     """
 
     def __init__(self, n_units: Optional[int],
@@ -23,7 +63,7 @@ class YangAttention(tf.keras.layers.Layer):
 
         Reference: https://www.cs.cmu.edu/~./hovy/papers/16HLT-hierarchical-attention-networks.pdf
 
-        :param n_units: Attention units
+        :param n_units: Attention's variables units
         :param name: Layer name
         """
         super(YangAttention, self).__init__(name=name, **kwargs)
