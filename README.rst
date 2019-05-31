@@ -38,7 +38,8 @@ Showcase
         tf.keras.layers.Dense(1, activation='sigmoid')])
 
 .. TODO - | You are welcome continue to the :doc:`install` page, or explore the different modules available:
-    .. _`tavolo`: https://github.com/eliorc/tavolo
-    .. _`TensorFlow`: https://www.tensorflow.org/
-    .. _`Kaggle`: https://www.kaggle.com
-    .. _`tf.keras`: https://www.tensorflow.org/guide/keras
+
+.. _`tavolo`: https://github.com/eliorc/tavolo
+.. _`TensorFlow`: https://www.tensorflow.org/
+.. _`Kaggle`: https://www.kaggle.com
+.. _`tf.keras`: https://www.tensorflow.org/guide/keras
