@@ -10,6 +10,8 @@ Modules related to embeddings
 
 -------
 
+.. _`positional_encoding`:
+
 ``PositionalEncoding``
 ++++++++++++++++++++++
 

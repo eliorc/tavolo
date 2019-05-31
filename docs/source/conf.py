@@ -61,7 +61,7 @@ html_theme_options = {
     'logo_only': True,
 }
 
-html_logo = '_static/logo_sidebar.png'
+html_logo = '_static/logo.png'
 html_favicon = '_static/favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,

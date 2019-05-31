@@ -10,6 +10,8 @@ Layers mapping sequences to sequences
 
 -------
 
+.. _`multi_headed_self_attention`:
+
 ``MultiHeadedSelfAttention``
 ++++++++++++++++++++++++++++
 

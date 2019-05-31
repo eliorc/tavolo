@@ -10,6 +10,8 @@ Modules for applying normalization techniques
 
 -------
 
+.. _`layer_norm`:
+
 ``LayerNorm``
 +++++++++++++
 

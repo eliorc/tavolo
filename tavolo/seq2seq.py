@@ -68,7 +68,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
     def __init__(self,
                  n_heads: Optional[int] = 4,
                  n_units: Optional[int] = None,
-                 dropout_rate: Optional[float] = None,
+                 dropout_rate: Optional[float] = 0.,
                  causality: Optional[bool] = False,
                  name: Optional[str] = 'multi_headed_self_attention',
                  **kwargs):

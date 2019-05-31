@@ -10,6 +10,8 @@ Layers mapping sequences to vectors
 
 -------
 
+.. _`yang_attention`:
+
 ``YangAttention``
 +++++++++++++++++
 
