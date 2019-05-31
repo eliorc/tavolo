@@ -1,6 +1,5 @@
 /* Taken from the beautiful PyTorch docs */
 /* https://github.com/pytorch/pytorch/blob/master/docs/source/_static/css/pytorch_theme.css */
-
 body {
     font-family: "Lato", "proxima-nova", "Helvetica Neue", Arial, sans-serif;
 }
@@ -118,4 +117,12 @@ nav .hidden-section {
 
 .wy-side-nav-search > div.version {
     color: #000;
+}
+
+.wy-menu > .caption > span.caption-text {
+  color: #ffffff;
+}
+
+.wy-menu-vertical > .caption > span.caption-text {
+  color: #ffffff;
 }
