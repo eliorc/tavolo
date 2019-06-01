@@ -12,4 +12,4 @@ setup(name='tavolo',
       install_requires=[
           'numpy',
           'tensorflow==2.0.0-alpha0'],
-      python_requires='>=3')
+      python_requires='>=3.5')
