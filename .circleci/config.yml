@@ -4,29 +4,29 @@ workflows:
   test:
     jobs:
       - test-3.7:
-        filters:
-          branches:
-            only:
-              - master
-              - dev
+          filters:
+            branches:
+              only:
+                - master
+                - dev
       - test-3.6:
-        filters:
-          branches:
-            only:
-              - master
-              - dev
+          filters:
+            branches:
+              only:
+                - master
+                - dev
       - test-3.5:
-        filters:
-          branches:
-            only:
-              - master
-              - dev
+          filters:
+            branches:
+              only:
+                - master
+                - dev
       - test-3.4:
-        filters:
-          branches:
-            only:
-              - master
-              - dev
+          filters:
+            branches:
+              only:
+                - master
+                - dev
 jobs:
   test-3.7: &test-template
     docker:
