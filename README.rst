@@ -24,11 +24,9 @@ Documentation
 Showcase
 --------
 
-.. TODO - Add LayerNorm and MultiHeadedSelfAttention links
-
 | tavolo's API is straightforward and adopting its modules is as easy as it gets.
-| In tavolo, you'll find implementations for basic layers like ``LayerNorm`` to complex modules like the Transformer's
-  ``MultiHeadedSelfAttention``.
+| In tavolo, you'll find implementations for basic layers like `LayerNorm`_ to complex modules like the Transformer's
+  `MultiHeadedSelfAttention`_.
 | For example, if we wanted to add head a multi-headed attention mechanism into our model, it would look something like:
 |
 
@@ -48,3 +46,5 @@ Showcase
 .. _`TensorFlow`: https://www.tensorflow.org/
 .. _`Kaggle`: https://www.kaggle.com
 .. _`tf.keras`: https://www.tensorflow.org/guide/keras
+.. _`LayerNorm`: https://tavolo.readthedocs.io/en/latest/normalization.html#layer-norm
+.. _`MultiHeadedSelfAttention`: https://tavolo.readthedocs.io/en/latest/seq2seq.html#multi-headed-self-attention
