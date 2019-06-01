@@ -21,6 +21,8 @@ project = 'tavolo'
 copyright = '2019, Elior Cohen'
 author = 'Elior Cohen'
 
+master_doc = 'index'
+
 # The full version, including alpha/beta/rc tags
 release = tvl.__version__
 
