@@ -54,6 +54,7 @@ jobs:
           command: |
             source venv/bin/activate
             pytest -s --cov=tavolo tests/
+            codecov
   test-3.6:
     <<: *test-template
     docker:
