@@ -65,7 +65,7 @@ class PositionalEncoding(tf.keras.layers.Layer):
     def __init__(self,
                  max_sequence_length: int,
                  embedding_dim: int,
-                 normalize_factor: Optional[float] = 10_000,
+                 normalize_factor: Optional[float] = 10000,
                  name: Optional[str] = 'positional_encoding',
                  **kwargs):
         """
