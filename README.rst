@@ -29,7 +29,7 @@ Showcase
 | tavolo's API is straightforward and adopting its modules is as easy as it gets.
 | In tavolo, you'll find implementations for basic layers like ``LayerNorm`` to complex modules like the Transformer's
   ``MultiHeadedSelfAttention``.
-| For example, if we wanted to head a multi-headed attention mechanism into our model, it would look something like:
+| For example, if we wanted to add head a multi-headed attention mechanism into our model, it would look something like:
 |
 
 .. code-block:: python3

@@ -4,3 +4,4 @@ sphinxcontrib-httpdomain
 sphinx_rtd_theme
 pygments
 pygments-style-github
+tavolo
