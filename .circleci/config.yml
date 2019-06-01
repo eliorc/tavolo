@@ -1,9 +1,9 @@
 version: 2
 
 jobs:
-  build:
+  test-3.7: &test-template
     docker:
-      - image: circleci/python:3.5
+      - image: circleci/python:3.7
     branches:
       only:
         - master
@@ -37,3 +37,15 @@ jobs:
           command: |
             source venv/bin/activate
             pytest -s --cov=tavolo tests/
+  test-3.6:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.6
+  test-3.5:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.5
+  test-3.4:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.4
