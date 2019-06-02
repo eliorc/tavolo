@@ -39,3 +39,12 @@ def test_masking():
     result = yang_attention(masking_layer(masked_input))
 
     assert result.shape == (input_shape_3d[0], input_shape_3d[-1])
+
+
+def test_serialization():
+    """ Test layer serialization (get_config, from_config) """
+
+    simple = YangAttention(n_units=56)
+    restored = YangAttention.from_config(simple.get_config())
+
+    assert restored.get_config() == simple.get_config()

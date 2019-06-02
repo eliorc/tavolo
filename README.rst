@@ -9,6 +9,9 @@
 .. image:: https://img.shields.io/badge/Python-3.5%20%7C%203.6%20%7C%203.7-blue.svg
     :alt: Supported Python versions
 
+.. image:: https://img.shields.io/badge/tensorflow-2.0.0--alpha0-orange.svg
+    :alt: Supported TensorFlow versions
+
 .. image:: https://codecov.io/gh/eliorc/tavolo/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/eliorc/tavolo
     :alt: Code test coverage

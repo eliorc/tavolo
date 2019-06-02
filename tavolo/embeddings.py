@@ -76,6 +76,10 @@ class PositionalEncoding(tf.keras.layers.Layer):
         """
         super().__init__(name=name, **kwargs)
 
+        self.max_sequence_length = max_sequence_length
+        self.embedding_dim = embedding_dim
+        self.normalize_factor = normalize_factor
+
         # Error checking
         if max_sequence_length < 1:
             raise ValueError(
@@ -108,9 +112,21 @@ class PositionalEncoding(tf.keras.layers.Layer):
              mask: Optional[tf.Tensor] = None,
              **kwargs) -> tf.Tensor:
 
-
         output = inputs + self.positional_encoding
         if mask is not None:
-            output = tf.where(tf.tile(tf.expand_dims(mask, axis=-1), multiples=[1, 1, inputs.shape[-1]]), output, inputs)
+            output = tf.where(tf.tile(tf.expand_dims(mask, axis=-1), multiples=[1, 1, inputs.shape[-1]]), output,
+                              inputs)
 
         return output  # shape=(batch_size, time_steps, channels)
+
+    def get_config(self):
+        base_config = super().get_config()
+        base_config['max_sequence_length'] = self.max_sequence_length
+        base_config['embedding_dim'] = self.embedding_dim
+        base_config['normalize_factor'] = self.normalize_factor
+
+        return base_config
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)

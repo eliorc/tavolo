@@ -68,3 +68,12 @@ def test_causality():
     # Assert last step is different but the rest not affected
     assert (result[:, :-1, :].numpy() == result_[:, :-1, :].numpy()).all()  # Without last step
     assert not (result.numpy() == result_.numpy()).all()
+
+
+def test_serialization():
+    """ Test layer serialization (get_config, from_config) """
+
+    simple = MultiHeadedSelfAttention()
+    restored = MultiHeadedSelfAttention.from_config(simple.get_config())
+
+    assert restored.get_config() == simple.get_config()

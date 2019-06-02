@@ -86,3 +86,13 @@ class LayerNorm(tf.keras.layers.Layer):
         normalized = (inputs - mean) / ((variance + self.epsilon) ** .5)  # shape=(batch_size, channels)
 
         return self.gamma * normalized + self.beta  # shape=(batch_size, channels)
+
+    def get_config(self):
+        base_config = super().get_config()
+        base_config['epsilon'] = self.epsilon
+
+        return base_config
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
