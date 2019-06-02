@@ -78,7 +78,7 @@ class PositionalEncoding(tf.keras.layers.Layer):
 
         self.max_sequence_length = max_sequence_length
         self.embedding_dim = embedding_dim
-        self.normalize_facot = normalize_factor
+        self.normalize_factor = normalize_factor
 
         # Error checking
         if max_sequence_length < 1:

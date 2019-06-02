@@ -52,3 +52,12 @@ def test_logic():
 
     # Assert output correctness
     assert tf.reduce_sum(layer_norm_2d(inputs_2d)).numpy() == 0
+
+
+def test_serialization():
+    """ Test layer serialization (get_config, from_config) """
+
+    simple = LayerNorm()
+    restored = LayerNorm.from_config(simple.get_config())
+
+    assert restored.get_config() == simple.get_config()

@@ -51,3 +51,13 @@ def test_logic():
 
     # Assert output correctness
     assert tf.reduce_sum(positional_encoding(inputs_3d) - positional_encoding.positional_encoding).numpy() == 0
+
+
+def test_serialization():
+    """ Test layer serialization (get_config, from_config) """
+
+    simple = PositionalEncoding(max_sequence_length=100,
+                                embedding_dim=24)
+    restored = PositionalEncoding.from_config(simple.get_config())
+
+    assert restored.get_config() == simple.get_config()
