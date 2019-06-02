@@ -91,6 +91,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
 
         self.n_heads = n_heads
         self.n_units = n_units
+        self.dropout_rate = dropout_rate
         self.causality = causality
         self.Q = None
         self.K = None
@@ -204,3 +205,16 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
                             axis=2)  # shape=(batch_size, time_steps, n_units)
 
         return outputs
+
+    def get_config(self):
+        base_config = super().get_config()
+        base_config['n_heads'] = self.n_heads
+        base_config['n_units'] = self.n_units
+        base_config['dropout_rate'] = self.dropout_rate
+        base_config['causality'] = self.causality
+
+        return base_config
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)

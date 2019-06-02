@@ -107,3 +107,13 @@ class YangAttention(tf.keras.layers.Layer):
         output = tf.reduce_sum(inputs * tf.expand_dims(alphas, axis=-1), axis=1)  # shape=(batch_size, channels)
 
         return output
+
+    def get_config(self):
+        base_config = super().get_config()
+        base_config['n_units'] = self.n_units
+
+        return base_config
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
