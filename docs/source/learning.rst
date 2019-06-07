@@ -1,7 +1,7 @@
 Learning
 ========
 
-Module for altering the learning process
+Modules for altering the learning process
 
 .. contents:: Modules
     :local:
