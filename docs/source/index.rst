@@ -47,6 +47,7 @@ Showcase
    :caption: Modules
 
    embeddings
+   learning
    normalization
    seq2seq
    seq2vec
