@@ -1,6 +1,6 @@
 from setuptools import setup
 
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 
 setup(name='tavolo',
       version=VERSION,
@@ -11,5 +11,5 @@ setup(name='tavolo',
       packages=['tavolo'],
       install_requires=[
           'numpy',
-          'tensorflow==2.0.0-alpha0'],
+          'tensorflow==2.0.0-beta0'],
       python_requires='>=3.5')

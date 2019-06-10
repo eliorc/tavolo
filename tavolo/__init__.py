@@ -1,5 +1,5 @@
 __name__ = 'tavolo'
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 from . import embeddings
 from . import normalization
