@@ -31,8 +31,8 @@ def test_masking():
     # Input
     input_shape_3d = (56, 10, 30)
     inputs_3d = tf.random.normal(shape=input_shape_3d)
-    mask = tf.less(tf.reduce_sum(tf.reduce_sum(inputs_3d, axis=-1), axis=-1), 0)
-    masked_input = tf.where(mask, tf.zeros_like(inputs_3d), inputs_3d)
+    mask = tf.less(tf.reduce_sum(tf.reduce_sum(inputs_3d, axis=-1, keepdims=True), axis=-1, keepdims=True), 0)
+    masked_input = tf.where(tf.broadcast_to(mask, input_shape_3d), tf.zeros_like(inputs_3d), inputs_3d)
 
     # Layers
     masking_layer = tf.keras.layers.Masking(mask_value=0., input_shape=input_shape_3d[1:])
