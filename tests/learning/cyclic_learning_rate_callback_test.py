@@ -9,6 +9,8 @@ from tavolo.learning import CyclicLearningRateCallback
 def test_logic():
     """ Test logic on known input """
 
+    # -------- TRIANGULAR --------
+
     # Input
     input_2d = np.random.normal(size=(1000, 20))
     labels = np.random.randint(low=0, high=2, size=1000)
@@ -28,3 +30,27 @@ def test_logic():
     model.fit(input_2d, labels, batch_size=10, epochs=5, callbacks=[clr], verbose=0)
 
     assert all(math.isclose(a, b, rel_tol=0.001) for a, b in zip(clr.history['lr'], expected_lr_values))
+
+    # -------- TRIANGULAR2 --------
+
+    # Create model
+    model = tf.keras.Sequential([tf.keras.layers.Input(shape=(20,)),
+                                 tf.keras.layers.Dense(10, activation=tf.nn.relu),
+                                 tf.keras.layers.Dense(1, activation=tf.nn.sigmoid)])
+    model.compile(optimizer=tf.keras.optimizers.SGD(), loss='binary_crossentropy')
+
+    clr = CyclicLearningRateCallback(scale_scheme='triangular2')
+
+    model.fit(input_2d, labels, batch_size=10, epochs=5, callbacks=[clr], verbose=0)
+
+    # -------- EXPONENT RANGE --------
+
+    # Create model
+    model = tf.keras.Sequential([tf.keras.layers.Input(shape=(20,)),
+                                 tf.keras.layers.Dense(10, activation=tf.nn.relu),
+                                 tf.keras.layers.Dense(1, activation=tf.nn.sigmoid)])
+    model.compile(optimizer=tf.keras.optimizers.SGD(), loss='binary_crossentropy')
+
+    clr = CyclicLearningRateCallback(scale_scheme='exp_range')
+
+    model.fit(input_2d, labels, batch_size=10, epochs=5, callbacks=[clr], verbose=0)

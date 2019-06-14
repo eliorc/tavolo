@@ -28,7 +28,7 @@ Tavolo
 | tavolo gathers implementations of these useful ideas from the community (by contribution, from `Kaggle`_ etc.)
   and makes them accessible in a single PyPI hosted package that compliments the `tf.keras`_ module.
 |
-| *Notice: tavolo is developed for TensorFlow 2.0 (right now on alpha), most modules will work with earlier versions but some won't (like LayerNorm)*
+| *Notice: tavolo is developed for TensorFlow 2.0 (right now on beta), most modules will work with earlier versions but some won't (like LayerNorm)*
 
 Documentation
 -------------

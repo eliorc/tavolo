@@ -11,7 +11,7 @@ Welcome to tavolo's documentation!
 
 .. warning::
 
-    tavolo is developed for TensorFlow 2.0 (right now on alpha), most modules will work with earlier versions but some won't (like LayerNorm)
+    tavolo is developed for TensorFlow 2.0 (right now on beta), most modules will work with earlier versions but some won't (like LayerNorm)
 
 Showcase
 --------
@@ -43,7 +43,7 @@ Showcase
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Modules
 
    embeddings
