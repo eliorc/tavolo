@@ -16,3 +16,15 @@ Modules for altering the learning process
 ++++++++++++++++++++++++++++++
 
 .. automodule:: learning.CyclicLearningRateCallback
+
+-------
+
+.. _`learning_rate_finder`:
+
+``LearningRateFinder``
+++++++++++++++++++++++
+
+.. automodule:: learning.LearningRateFinder
+
+    .. automethod:: learning.LearningRateFinder::scan
+
