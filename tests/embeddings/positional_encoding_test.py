@@ -1,3 +1,4 @@
+import pytest
 import tensorflow as tf
 
 from tavolo.embeddings import PositionalEncoding
@@ -61,3 +62,23 @@ def test_serialization():
     restored = PositionalEncoding.from_config(simple.get_config())
 
     assert restored.get_config() == simple.get_config()
+
+
+def test_exceptions():
+    """ Text for expected exceptions """
+
+    # Sequence length lower than 1
+    with pytest.raises(ValueError) as excinfo:
+        PositionalEncoding(name='positional_encoding',
+                           max_sequence_length=0,
+                           embedding_dim=32)
+
+    assert 'max_sequence_length' in str(excinfo.value)
+
+    # Embedding dimensions lower than 1
+    with pytest.raises(ValueError) as excinfo:
+        PositionalEncoding(name='positional_encoding',
+                           max_sequence_length=10,
+                           embedding_dim=0)
+
+    assert 'embedding_dim' in str(excinfo.value)

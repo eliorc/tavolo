@@ -1,3 +1,4 @@
+import pytest
 import tensorflow as tf
 
 from tavolo.seq2seq import MultiHeadedSelfAttention
@@ -77,3 +78,23 @@ def test_serialization():
     restored = MultiHeadedSelfAttention.from_config(simple.get_config())
 
     assert restored.get_config() == simple.get_config()
+
+
+def test_exceptions():
+    """ Text for expected exceptions """
+    # Inputs shape
+    input_shape_3d = (56, 10, 30)
+    n_units_mh = 99
+    n_heads = 4
+
+    inputs_3d = tf.random.normal(shape=input_shape_3d)
+
+    multi_headed_self_attention = MultiHeadedSelfAttention(n_heads=n_heads,
+                                                           n_units=n_units_mh,
+                                                           name='mh_self_attention')
+
+    # n_units % n_heads != 0, not divisible
+    with pytest.raises(ValueError) as excinfo:
+        multi_headed_self_attention(inputs_3d)
+
+    assert 'n_units must be divisible by n_heads' in str(excinfo.value)

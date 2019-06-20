@@ -103,6 +103,10 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
         # Units
         self.n_units = self.n_units or input_shape[-1]
 
+        # Test units - n_heads validity
+        if self.n_units % self.n_heads != 0:
+            raise ValueError('n_units must be divisible by n_heads')
+
         # Linear projections
         self.Q = tf.keras.layers.Dense(units=self.n_units,
                                        activation=None,

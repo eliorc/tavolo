@@ -1,5 +1,6 @@
 import math
 
+import pytest
 import tensorflow as tf
 import numpy as np
 
@@ -54,3 +55,26 @@ def test_logic():
     clr = CyclicLearningRateCallback(scale_scheme='exp_range')
 
     model.fit(input_2d, labels, batch_size=10, epochs=5, callbacks=[clr], verbose=0)
+
+    # -------- CUSTOM SCALING --------
+
+    # Create model
+    model = tf.keras.Sequential([tf.keras.layers.Input(shape=(20,)),
+                                 tf.keras.layers.Dense(10, activation=tf.nn.relu),
+                                 tf.keras.layers.Dense(1, activation=tf.nn.sigmoid)])
+    model.compile(optimizer=tf.keras.optimizers.SGD(), loss='binary_crossentropy')
+
+    scale_fn = lambda x: 0.5 * (1 + np.sin(x * np.pi / 2.))
+    clr = CyclicLearningRateCallback(scale_mode='cycle', scale_fn=scale_fn)
+
+    model.fit(input_2d, labels, batch_size=10, epochs=5, callbacks=[clr], verbose=0)
+
+
+def test_exceptions():
+    """ Text for expected exceptions """
+
+    # Sequence length lower than 1
+    with pytest.raises(ValueError) as excinfo:
+        CyclicLearningRateCallback(scale_scheme='wrong_value')
+
+    assert 'is not a supported scale scheme' in str(excinfo.value)
