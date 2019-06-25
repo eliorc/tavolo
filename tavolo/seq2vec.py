@@ -9,7 +9,7 @@ import tensorflow as tf
 
 class YangAttention(tf.keras.layers.Layer):
     """
-    Applies attention using learned variables
+    Reduce time dimension by applying attention using learned variables
 
     Arguments
     ---------
