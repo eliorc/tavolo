@@ -87,7 +87,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
         :param name: Layer name
         """
 
-        super(MultiHeadedSelfAttention, self).__init__(name=name, **kwargs)
+        super().__init__(name=name, **kwargs)
 
         self.n_heads = n_heads
         self.n_units = n_units

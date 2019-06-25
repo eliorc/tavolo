@@ -56,7 +56,7 @@ class LayerNorm(tf.keras.layers.Layer):
         :param epsilon: Small number to avoid division by zero
         :param name: Layer name
         """
-        super(LayerNorm, self).__init__(name=name, **kwargs)
+        super().__init__(name=name, **kwargs)
 
         self.epsilon = epsilon
         self.beta, self.gamma = None, None

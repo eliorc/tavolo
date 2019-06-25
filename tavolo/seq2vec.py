@@ -66,7 +66,7 @@ class YangAttention(tf.keras.layers.Layer):
         :param n_units: Attention's variables units
         :param name: Layer name
         """
-        super(YangAttention, self).__init__(name=name, **kwargs)
+        super().__init__(name=name, **kwargs)
         self.n_units = n_units
         self.very_small_value = (-2 ** 32 + 1)  # Used for padding to avoid attending
 
