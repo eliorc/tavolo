@@ -49,8 +49,8 @@ class LayerNorm(tf.keras.layers.Layer):
         https://arxiv.org/pdf/1607.06450
     """
 
-    def __init__(self, epsilon: Optional[float] = 1e-8,
-                 name: Optional[str] = 'layer_norm',
+    def __init__(self, epsilon: float = 1e-8,
+                 name: str = 'layer_norm',
                  **kwargs):
         """
         :param epsilon: Small number to avoid division by zero
@@ -94,5 +94,5 @@ class LayerNorm(tf.keras.layers.Layer):
         return base_config
 
     @classmethod
-    def from_config(cls, config):
+    def from_config(cls, config: dict):
         return cls(**config)

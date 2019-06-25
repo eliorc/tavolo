@@ -65,8 +65,8 @@ class PositionalEncoding(tf.keras.layers.Layer):
     def __init__(self,
                  max_sequence_length: int,
                  embedding_dim: int,
-                 normalize_factor: Optional[float] = 10000,
-                 name: Optional[str] = 'positional_encoding',
+                 normalize_factor: float = 10000,
+                 name: str = 'positional_encoding',
                  **kwargs):
         """
         :param max_sequence_length: Maximum sequence length of input

@@ -52,8 +52,8 @@ class YangAttention(tf.keras.layers.Layer):
 
     """
 
-    def __init__(self, n_units: Optional[int],
-                 name: Optional[str] = 'yang_attention',
+    def __init__(self, n_units: int,
+                 name: str = 'yang_attention',
                  **kwargs):
         """
         Apply attention with learned weights.
@@ -115,5 +115,5 @@ class YangAttention(tf.keras.layers.Layer):
         return base_config
 
     @classmethod
-    def from_config(cls, config):
+    def from_config(cls, config: dict):
         return cls(**config)

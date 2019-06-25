@@ -66,11 +66,11 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
     """
 
     def __init__(self,
-                 n_heads: Optional[int] = 4,
+                 n_heads: int = 4,
                  n_units: Optional[int] = None,
-                 dropout_rate: Optional[float] = 0.,
-                 causality: Optional[bool] = False,
-                 name: Optional[str] = 'multi_headed_self_attention',
+                 dropout_rate: float = 0.,
+                 causality: bool = False,
+                 name: str = 'multi_headed_self_attention',
                  **kwargs):
         """
         Apply multi-headed attention
@@ -130,7 +130,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
              mask: Optional[tf.Tensor] = None,
              query: Optional[tf.Tensor] = None,
              query_mask: Optional[tf.Tensor] = None,
-             training: Optional[bool] = False,
+             training: bool = False,
              **kwargs) -> tf.Tensor:
         """
 
@@ -220,5 +220,5 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
         return base_config
 
     @classmethod
-    def from_config(cls, config):
+    def from_config(cls, config: dict):
         return cls(**config)
