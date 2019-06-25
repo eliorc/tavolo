@@ -63,8 +63,6 @@ class PositionalEncoding(tf.keras.layers.Layer):
     """
 
     def __init__(self,
-                 max_sequence_length: int,
-                 embedding_dim: int,
                  normalize_factor: float = 10000,
                  name: str = 'positional_encoding',
                  **kwargs):
@@ -76,22 +74,15 @@ class PositionalEncoding(tf.keras.layers.Layer):
         """
         super().__init__(name=name, **kwargs)
 
-        self.max_sequence_length = max_sequence_length
-        self.embedding_dim = embedding_dim
         self.normalize_factor = normalize_factor
+        self.positional_encoding = None
 
-        # Error checking
-        if max_sequence_length < 1:
-            raise ValueError(
-                'max_sequence_length must be greater than zero. (value provided {})'.format(max_sequence_length))
-
-        if embedding_dim < 1:
-            raise ValueError(
-                'embedding_dim must be greater than zero. (value provided {})'.format(max_sequence_length))
+    def build(self, input_shape):
+        max_sequence_length, embedding_dim = input_shape[-2:]
 
         # First part of the PE function: sin and cos argument
         self.positional_encoding = np.array([
-            [pos / np.power(normalize_factor, 2. * i / embedding_dim) for i in range(embedding_dim)]
+            [pos / np.power(self.normalize_factor, 2. * i / embedding_dim) for i in range(embedding_dim)]
             for pos in range(max_sequence_length)])
 
         # Second part, apply the cosine to even columns and sin to odds.
@@ -111,7 +102,6 @@ class PositionalEncoding(tf.keras.layers.Layer):
     def call(self, inputs,
              mask: Optional[tf.Tensor] = None,
              **kwargs) -> tf.Tensor:
-
         output = inputs + self.positional_encoding
         if mask is not None:
             output = tf.where(tf.tile(tf.expand_dims(mask, axis=-1), multiples=[1, 1, inputs.shape[-1]]), output,
@@ -121,8 +111,6 @@ class PositionalEncoding(tf.keras.layers.Layer):
 
     def get_config(self):
         base_config = super().get_config()
-        base_config['max_sequence_length'] = self.max_sequence_length
-        base_config['embedding_dim'] = self.embedding_dim
         base_config['normalize_factor'] = self.normalize_factor
 
         return base_config
