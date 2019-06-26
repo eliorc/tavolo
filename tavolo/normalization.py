@@ -74,6 +74,8 @@ class LayerNorm(tf.keras.layers.Layer):
                                        initializer=tf.keras.initializers.ones,
                                        dtype=self.dtype)
 
+        super().build(input_shape)
+
     def compute_mask(self, inputs, mask=None):
         return mask
 

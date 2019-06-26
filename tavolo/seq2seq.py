@@ -123,6 +123,8 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
                                        name='V',
                                        dtype=self.dtype)
 
+        super().build(input_shape)
+
     def compute_mask(self, inputs, mask=None):
         return mask
 
