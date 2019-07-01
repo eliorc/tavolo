@@ -3,7 +3,7 @@ from typing import Optional
 import tensorflow as tf
 
 
-class LayerNorm(tf.keras.layers.Layer):
+class LayerNormalization(tf.keras.layers.Layer):
     """
     Apply layer normalization
 
@@ -37,7 +37,7 @@ class LayerNorm(tf.keras.layers.Layer):
         import tavolo as tvl
 
         model = tf.keras.Sequential([SomeLayer(),
-                                     tvl.normalization.LayerNorm()])  # Apply layer normalization on SomeLayer's output
+                                     tvl.normalization.LayerNormalization()])  # Apply layer normalization on SomeLayer's output
 
 
     References
@@ -50,7 +50,7 @@ class LayerNorm(tf.keras.layers.Layer):
     """
 
     def __init__(self, epsilon: float = 1e-8,
-                 name: str = 'layer_norm',
+                 name: str = 'layer_normalization',
                  **kwargs):
         """
         :param epsilon: Small number to avoid division by zero

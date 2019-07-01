@@ -11,13 +11,13 @@ Welcome to tavolo's documentation!
 
 .. warning::
 
-    tavolo is developed for TensorFlow 2.0 (right now on beta), most modules will work with earlier versions but some won't (like LayerNorm)
+    tavolo is developed for TensorFlow 2.0 (right now on beta), most modules will work with earlier versions but some won't (like LayerNormalization)
 
 Showcase
 --------
 
 | tavolo's API is straightforward and adopting its modules is as easy as it gets.
-| In tavolo, you'll find implementations for basic layers like :ref:`layer_norm` to complex modules like the Transformer's
+| In tavolo, you'll find implementations for basic layers like :ref:`layer_normalization` to complex modules like the Transformer's
   :ref:`multi_headed_self_attention`.
 | For example, if we wanted to add head a multi-headed attention mechanism into our model, it would look something like:
 
