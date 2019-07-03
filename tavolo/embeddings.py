@@ -280,7 +280,6 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
     - `embedding_matrices` (``List[tf.keras.layers.Embedding]``): List of embedding layers
     - `output_dim` (``int``): Dimension of the output embedding
     - `n_lstm_units` (``int``): Number of units in each LSTM, (notated as `m` in the original article)
-    - `cudnn_lstm` (``bool``): Whether to use CuDNNLSTM or the standard LSTM
     - `name` (``str``): Layer name
 
 
@@ -329,13 +328,6 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
         model = tf.keras.Sequential([tf.keras.layers.Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32'),
                                      tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding], n_lstm_units=128, output_dim=200)])
 
-    When GPU is available, it is possible to use the ``tf.keras.layers.CuDNNLSTM`` implementation for enhanced performance
-
-    .. code-block:: python3
-
-        model = tf.keras.Sequential([tf.keras.layers.Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32'),
-                                     tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding], cudnn_lstm=True)])
-
     References
     ----------
     `Dynamic Meta-Embeddings for Improved Sentence Representations`_
@@ -349,14 +341,12 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
                  embedding_matrices: List[tf.keras.layers.Embedding],
                  output_dim: Optional[int] = None,
                  n_lstm_units: int = 2,
-                 cudnn_lstm: bool = False,
                  name: str = 'contextual_dynamic_meta_embedding',
                  **kwargs):
         """
         :param embedding_matrices: List of embedding layers
         :param n_lstm_units: Number of units in each LSTM, (notated as `m` in the original article)
         :param output_dim: Dimension of the output embedding
-        :param cudnn_lstm: Whether to use CuDNNLSTM or the standard LSTM
         :param name: Layer name
         """
 
@@ -370,7 +360,6 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
         self.output_dim = output_dim or min([e.output_dim for e in embedding_matrices])
 
         self.n_lstm_units = n_lstm_units
-        self.cudnn_lstm = cudnn_lstm
 
         self.embedding_matrices = embedding_matrices
         self.n_embeddings = len(self.embedding_matrices)
@@ -380,11 +369,8 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
                                                   name='projection_{}'.format(i),
                                                   dtype=self.dtype) for i, e in enumerate(self.embedding_matrices)]
 
-        # LSTM or CuDNNLSTM
-        lstm = tf.keras.layers.CuDNNLSTM if self.cudnn_lstm else tf.keras.layers.LSTM
-
         self.bilstm = tf.keras.layers.Bidirectional(
-            lstm(units=self.n_lstm_units, return_sequences=True),
+            tf.keras.layers.LSTM(units=self.n_lstm_units, return_sequences=True),
             name='bilstm',
             dtype=self.dtype)
 
