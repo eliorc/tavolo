@@ -16,3 +16,17 @@ Modules related to embeddings
 ++++++++++++++++++++++
 
 .. automodule:: embeddings.PositionalEncoding
+
+.. _`dynamic_meta_embedding`:
+
+``DynamicMetaEmbedding``
+++++++++++++++++++++++++
+
+.. automodule:: embeddings.DynamicMetaEmbedding
+
+.. _`contextual_dynamic_meta_embedding`:
+
+``ContextualDynamicMetaEmbedding``
+++++++++++++++++++++++
+
+.. automodule:: embeddings.ContextualDynamicMetaEmbedding
