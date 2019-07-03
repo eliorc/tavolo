@@ -66,11 +66,11 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
     """
 
     def __init__(self,
-                 n_heads: Optional[int] = 4,
+                 n_heads: int = 4,
                  n_units: Optional[int] = None,
-                 dropout_rate: Optional[float] = 0.,
-                 causality: Optional[bool] = False,
-                 name: Optional[str] = 'multi_headed_self_attention',
+                 dropout_rate: float = 0.,
+                 causality: bool = False,
+                 name: str = 'multi_headed_self_attention',
                  **kwargs):
         """
         Apply multi-headed attention
@@ -87,7 +87,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
         :param name: Layer name
         """
 
-        super(MultiHeadedSelfAttention, self).__init__(name=name, **kwargs)
+        super().__init__(name=name, **kwargs)
 
         self.n_heads = n_heads
         self.n_units = n_units
@@ -102,6 +102,10 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
     def build(self, input_shape):
         # Units
         self.n_units = self.n_units or input_shape[-1]
+
+        # Test units - n_heads validity
+        if self.n_units % self.n_heads != 0:
+            raise ValueError('n_units must be divisible by n_heads')
 
         # Linear projections
         self.Q = tf.keras.layers.Dense(units=self.n_units,
@@ -119,6 +123,8 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
                                        name='V',
                                        dtype=self.dtype)
 
+        super().build(input_shape)
+
     def compute_mask(self, inputs, mask=None):
         return mask
 
@@ -126,7 +132,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
              mask: Optional[tf.Tensor] = None,
              query: Optional[tf.Tensor] = None,
              query_mask: Optional[tf.Tensor] = None,
-             training: Optional[bool] = False,
+             training: bool = False,
              **kwargs) -> tf.Tensor:
         """
 
@@ -216,5 +222,5 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
         return base_config
 
     @classmethod
-    def from_config(cls, config):
+    def from_config(cls, config: dict):
         return cls(**config)

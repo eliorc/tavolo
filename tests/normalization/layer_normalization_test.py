@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from tavolo.normalization import LayerNorm
+from tavolo.normalization import LayerNormalization
 
 
 def test_shapes():
@@ -13,8 +13,8 @@ def test_shapes():
     inputs_2d = tf.random.normal(shape=input_shape_2d)
     inputs_3d = tf.random.normal(shape=input_shape_3d)
 
-    layer_norm_2d = LayerNorm(name='layer_norm_2d')
-    layer_norm_3d = LayerNorm(name='layer_norm_3d')
+    layer_norm_2d = LayerNormalization(name='layer_norm_2d')
+    layer_norm_3d = LayerNormalization(name='layer_norm_3d')
 
     output_2d, output_3d = layer_norm_2d(inputs_2d), layer_norm_3d(inputs_3d)
 
@@ -34,7 +34,7 @@ def test_masking():
 
     # Layers
     masking_layer = tf.keras.layers.Masking(mask_value=0., input_shape=input_shape_3d[1:])
-    layer_norm_3d = LayerNorm(name='layer_norm_3d')
+    layer_norm_3d = LayerNormalization(name='layer_norm_3d')
 
     result = layer_norm_3d(masking_layer(masked_input))
 
@@ -48,7 +48,7 @@ def test_logic():
     input_shape_2d = (56, 10)
     inputs_2d = tf.ones(shape=input_shape_2d)
 
-    layer_norm_2d = LayerNorm(name='layer_norm_2d')
+    layer_norm_2d = LayerNormalization(name='layer_norm_2d')
 
     # Assert output correctness
     assert tf.reduce_sum(layer_norm_2d(inputs_2d)).numpy() == 0
@@ -57,7 +57,7 @@ def test_logic():
 def test_serialization():
     """ Test layer serialization (get_config, from_config) """
 
-    simple = LayerNorm()
-    restored = LayerNorm.from_config(simple.get_config())
+    simple = LayerNormalization()
+    restored = LayerNormalization.from_config(simple.get_config())
 
     assert restored.get_config() == simple.get_config()

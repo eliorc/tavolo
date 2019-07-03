@@ -9,7 +9,7 @@ import tensorflow as tf
 
 class YangAttention(tf.keras.layers.Layer):
     """
-    Applies attention using learned variables
+    Reduce time dimension by applying attention using learned variables
 
     Arguments
     ---------
@@ -52,8 +52,8 @@ class YangAttention(tf.keras.layers.Layer):
 
     """
 
-    def __init__(self, n_units: Optional[int],
-                 name: Optional[str] = 'yang_attention',
+    def __init__(self, n_units: int,
+                 name: str = 'yang_attention',
                  **kwargs):
         """
         Apply attention with learned weights.
@@ -66,7 +66,7 @@ class YangAttention(tf.keras.layers.Layer):
         :param n_units: Attention's variables units
         :param name: Layer name
         """
-        super(YangAttention, self).__init__(name=name, **kwargs)
+        super().__init__(name=name, **kwargs)
         self.n_units = n_units
         self.very_small_value = (-2 ** 32 + 1)  # Used for padding to avoid attending
 
@@ -115,5 +115,5 @@ class YangAttention(tf.keras.layers.Layer):
         return base_config
 
     @classmethod
-    def from_config(cls, config):
+    def from_config(cls, config: dict):
         return cls(**config)

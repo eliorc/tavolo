@@ -1,9 +1,7 @@
-from typing import Optional
-
 import tensorflow as tf
 
 
-class LayerNorm(tf.keras.layers.Layer):
+class LayerNormalization(tf.keras.layers.Layer):
     """
     Apply layer normalization
 
@@ -37,7 +35,7 @@ class LayerNorm(tf.keras.layers.Layer):
         import tavolo as tvl
 
         model = tf.keras.Sequential([SomeLayer(),
-                                     tvl.normalization.LayerNorm()])  # Apply layer normalization on SomeLayer's output
+                                     tvl.normalization.LayerNormalization()])  # Apply layer normalization on SomeLayer's output
 
 
     References
@@ -49,14 +47,14 @@ class LayerNorm(tf.keras.layers.Layer):
         https://arxiv.org/pdf/1607.06450
     """
 
-    def __init__(self, epsilon: Optional[float] = 1e-8,
-                 name: Optional[str] = 'layer_norm',
+    def __init__(self, epsilon: float = 1e-8,
+                 name: str = 'layer_normalization',
                  **kwargs):
         """
         :param epsilon: Small number to avoid division by zero
         :param name: Layer name
         """
-        super(LayerNorm, self).__init__(name=name, **kwargs)
+        super().__init__(name=name, **kwargs)
 
         self.epsilon = epsilon
         self.beta, self.gamma = None, None
@@ -73,6 +71,8 @@ class LayerNorm(tf.keras.layers.Layer):
                                        shape=params_shape,
                                        initializer=tf.keras.initializers.ones,
                                        dtype=self.dtype)
+
+        super().build(input_shape)
 
     def compute_mask(self, inputs, mask=None):
         return mask
@@ -94,5 +94,5 @@ class LayerNorm(tf.keras.layers.Layer):
         return base_config
 
     @classmethod
-    def from_config(cls, config):
+    def from_config(cls, config: dict):
         return cls(**config)
