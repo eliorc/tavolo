@@ -329,6 +329,12 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
         model = tf.keras.Sequential([tf.keras.layers.Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32'),
                                      tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding], n_lstm_units=128, output_dim=200)])
 
+    When GPU is available, it is possible to use the ``tf.keras.layers.CuDNNLSTM`` implementation for enhanced performance
+
+    .. code-block:: python3
+
+        model = tf.keras.Sequential([tf.keras.layers.Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32'),
+                                     tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding], cudnn_lstm=True)])
 
     References
     ----------
