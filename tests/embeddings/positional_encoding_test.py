@@ -1,4 +1,3 @@
-import pytest
 import tensorflow as tf
 
 from tavolo.embeddings import PositionalEncoding
