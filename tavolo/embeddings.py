@@ -419,7 +419,6 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
         base_config['embedding_matrices'] = [e.get_config() for e in self.embedding_matrices]
         base_config['output_dim'] = self.output_dim
         base_config['n_lstm_units'] = self.n_lstm_units
-        base_config['cudnn_lstm'] = self.cudnn_lstm
 
         return base_config
 
