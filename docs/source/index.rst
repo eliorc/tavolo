@@ -18,8 +18,8 @@ Showcase
 
 | tavolo's API is straightforward and adopting its modules is as easy as it gets.
 | In tavolo, you'll find implementations for basic layers like :ref:`layer_normalization` to complex modules like the Transformer's
-  :ref:`multi_headed_self_attention`.
-| For example, if we wanted to add head a multi-headed attention mechanism into our model, it would look something like:
+  :ref:`multi_headed_self_attention`. You'll also find non-layer implementations that can ease development, like the :ref:`learning_rate_finder`.
+| For example, if we wanted to add head a multi-headed attention mechanism into our model and look for the optimal learning rate, it would look something like:
 
 .. code-block:: python3
 
@@ -33,6 +33,16 @@ Showcase
         tf.keras.layers.Dense(n_hidden_units, activation='relu'),
         tf.keras.layers.Dense(1, activation='sigmoid')])
 
+    model.compile(optimizer=tf.keras.optimizers.SGD(), loss=tf.keras.losses.CategoricalCrossentropy())
+
+    # Run learning rate range test
+    lr_finder = tvl.learning.LearningRateFinder(model=model)
+
+    learning_rates, losses = lr_finder.scan(train_data, train_labels, min_lr=0.0001, max_lr=1.0, batch_size=128)
+
+    ### Plot the results to choose your learning rate
+
+
 | You are welcome continue to the :doc:`install` page, or explore the different modules available:
 
 .. toctree::
@@ -40,6 +50,7 @@ Showcase
    :maxdepth: 1
 
    install
+   contributing
 
 
 .. toctree::
@@ -57,3 +68,9 @@ Showcase
 .. _`TensorFlow`: https://www.tensorflow.org/
 .. _`Kaggle`: https://www.kaggle.com
 .. _`tf.keras`: https://www.tensorflow.org/guide/keras
+
+
+Contributing
+------------
+
+| Want to contribute? Please read our :doc:`contributing`.
