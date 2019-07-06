@@ -191,7 +191,7 @@ class LearningRateFinder:
     Examples
     --------
 
-    Run an learning rate range test in the domain ``[0.0001, 1.0]``
+    Run a learning rate range test in the domain ``[0.0001, 1.0]``
 
     .. code-block:: python3
 
