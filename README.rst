@@ -47,8 +47,8 @@ Showcase
 
 
 | tavolo's API is straightforward and adopting its modules is as easy as it gets.
-| In tavolo, you'll find implementations for basic layers like :ref:`layer_normalization` to complex modules like the Transformer's
-  :ref:`multi_headed_self_attention`. You'll also find non-layer implementations that can ease development, like the :ref:`learning_rate_finder`.
+| In tavolo, you'll find implementations for basic layers like `LayerNormalization`_ to complex modules like the Transformer's
+  `MultiHeadedSelfAttention`_. You'll also find non-layer implementations that can ease development, like the `LearningRateFinder`_.
 | For example, if we wanted to add head a multi-headed attention mechanism into our model and look for the optimal learning rate, it would look something like:
 
 
@@ -85,6 +85,6 @@ Showcase
 Contributing
 ------------
 
-| Want to contribute? Please read our `contributing guide`_.
+| Want to contribute? Please read our `Contributing guide`_.
 
-.. _`contributing_contributing guide`: https://tavolo.readthedocs.io/en/latest/contributing.html
+.. _`Contributing guide`: https://tavolo.readthedocs.io/en/latest/contributing.html
