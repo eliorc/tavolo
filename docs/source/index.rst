@@ -11,7 +11,7 @@ Welcome to tavolo's documentation!
 
 .. warning::
 
-    tavolo is developed for TensorFlow 2.0 (right now on beta), most modules will work with earlier versions but some won't (like LayerNormalization)
+    tavolo is developed for TensorFlow 2.0 (right now on pre-release), most modules will work with earlier versions but some won't (like LayerNormalization)
 
 Showcase
 --------

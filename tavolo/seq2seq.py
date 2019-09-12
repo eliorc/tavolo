@@ -96,12 +96,14 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
         self.Q = None
         self.K = None
         self.V = None
+        self.output_projection = None
         self.dropout = tf.keras.layers.Dropout(rate=dropout_rate)
         self.very_small_value = (-2 ** 32 + 1)  # Used for padding to avoid attending
 
     def build(self, input_shape):
         # Units
-        self.n_units = self.n_units or input_shape[-1]
+        channels = input_shape[-1]
+        self.n_units = self.n_units or channels
 
         # Test units - n_heads validity
         if self.n_units % self.n_heads != 0:
@@ -110,18 +112,27 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
         # Linear projections
         self.Q = tf.keras.layers.Dense(units=self.n_units,
                                        activation=None,
+                                       use_bias=False,
                                        name='Q',
                                        dtype=self.dtype)
 
         self.K = tf.keras.layers.Dense(units=self.n_units,
                                        activation=None,
+                                       use_bias=False,
                                        name='K',
                                        dtype=self.dtype)
 
         self.V = tf.keras.layers.Dense(units=self.n_units,
                                        activation=None,
+                                       use_bias=False,
                                        name='V',
                                        dtype=self.dtype)
+
+        self.output_projection = tf.keras.layers.Dense(units=channels,
+                                                       activation=None,
+                                                       use_bias=False,
+                                                       name='output_projection',
+                                                       dtype=self.dtype)
 
         super().build(input_shape)
 
@@ -209,6 +220,9 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
         outputs = tf.matmul(alphas, V)  # shape=(batch_size * n_heads, time_steps, n_units / n_heads)
         outputs = tf.concat(tf.split(outputs, self.n_heads, axis=0),
                             axis=2)  # shape=(batch_size, time_steps, n_units)
+
+        # Project output
+        outputs = self.output_projection(outputs)  # shape=(batch_size, time_steps, channels)
 
         return outputs
 
