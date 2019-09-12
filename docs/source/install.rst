@@ -1,7 +1,12 @@
 Installation
 ============
 
-| tavolo is hosted on PyPI, and the source code is available on Github
+| tavolo is hosted on PyPI, and the source code is available on Github.
+
+.. note::
+
+    Tavolo will not install tensorflow by itself, this is to prevent installations of CPU and GPU versions together.
+    It is the user's responsibility to install the tensorflow library
 
 Install from PyPI
 +++++++++++++++++
