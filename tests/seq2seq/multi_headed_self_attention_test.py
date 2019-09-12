@@ -23,7 +23,7 @@ def test_shapes():
 
     # Assert correctness of output shapes
     assert output_single.shape == input_shape_3d
-    assert output_mh.shape == input_shape_3d[:-1] + (n_units_mh,)
+    assert output_mh.shape == input_shape_3d
 
 
 def test_masking():
