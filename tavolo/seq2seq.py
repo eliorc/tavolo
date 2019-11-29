@@ -13,7 +13,6 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
     
     - `n_heads` (``int``): Number of attention heads
     - `n_units` (``int``): Number of units (sum of units of all heads), defaults to the last dimension of the input
-    - `dropout_rate` (``float``): Rate of outputs to drop in the range [0, 1]
     - `causal` (``bool``): Use causality (make each time point in output dependent only on previous timepoints of input)
     - `name` (``str``): Layer name
     
@@ -82,7 +81,6 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
     def __init__(self,
                  n_heads: int = 4,
                  n_units: Optional[int] = None,
-                 dropout_rate: float = 0.,
                  causal: bool = False,
                  name: str = 'multi_headed_attention',
                  **kwargs):
@@ -96,7 +94,6 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
 
         :param n_heads: Number of attention heads
         :param n_units: Number of units (sum of units of all heads), defaults to the last dimension of the input
-        :param dropout_rate: Rate of outputs to drop in the range [0, 1]
         :param causal: Use causality (make each time point in output dependent only on previous timepoints of input)
         :param name: Layer name
         """
@@ -105,13 +102,11 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
 
         self.n_heads = n_heads
         self.n_units = n_units
-        self.dropout_rate = dropout_rate
         self.causal = causal
         self.Q = None
         self.K = None
         self.V = None
         self.output_projection = None
-        self.dropout = tf.keras.layers.Dropout(rate=dropout_rate)
         self.very_small_value = (-2 ** 32 + 1)  # Used for padding to avoid attending
 
     def build(self, input_shape):
@@ -199,10 +194,6 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
         attended = self.attention([Q, V, K],
                                   mask=attention_mask)  # shape=(batch_size * n_heads, time_steps, n_units / n_heads)
 
-        # Dropout
-        attended = self.dropout(attended,
-                                training=training)  # shape=(batch_size * n_heads, time_steps, n_units / n_heads)
-
         # Restore original shape
         outputs = tf.concat(tf.split(attended, self.n_heads, axis=0),
                             axis=2)  # shape=(batch_size, time_steps, n_units)
@@ -216,7 +207,6 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
         base_config = super().get_config()
         base_config['n_heads'] = self.n_heads
         base_config['n_units'] = self.n_units
-        base_config['dropout_rate'] = self.dropout_rate
         base_config['causal'] = self.causal
 
         return base_config

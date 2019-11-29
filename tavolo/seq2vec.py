@@ -77,10 +77,10 @@ class YangAttention(tf.keras.layers.Layer):
                                            activation=tf.nn.tanh,
                                            dtype=self.dtype,
                                            name='omega')
-        self.u_omega = self.add_variable('u_omega',
-                                         shape=(self.n_units,),
-                                         initializer=tf.keras.initializers.RandomNormal(stddev=0.1),
-                                         dtype=self.dtype)
+        self.u_omega = self.add_weight('u_omega',
+                                       shape=(self.n_units,),
+                                       initializer=tf.keras.initializers.RandomNormal(stddev=0.1),
+                                       dtype=self.dtype)
 
     def compute_mask(self, inputs, mask=None):
         return mask

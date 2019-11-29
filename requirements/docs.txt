@@ -4,5 +4,5 @@ sphinxcontrib-httpdomain
 sphinx_rtd_theme
 pygments
 pygments-style-github
-tensorflow==2.0.0-rc0
+tensorflow==2.0.0
 tavolo
