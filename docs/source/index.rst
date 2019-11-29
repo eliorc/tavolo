@@ -9,16 +9,13 @@ Welcome to tavolo's documentation!
 | tavolo gathers implementations of these useful ideas from the community (by contribution, from `Kaggle`_ etc.)
   and makes them accessible in a single PyPI hosted package that compliments the `tf.keras`_ module.
 
-.. warning::
-
-    tavolo is developed for TensorFlow 2.0 (right now on pre-release), most modules will work with earlier versions but some won't (like LayerNormalization)
 
 Showcase
 --------
 
 | tavolo's API is straightforward and adopting its modules is as easy as it gets.
-| In tavolo, you'll find implementations for basic layers like :ref:`layer_normalization` to complex modules like the Transformer's
-  :ref:`multi_headed_self_attention`. You'll also find non-layer implementations that can ease development, like the :ref:`learning_rate_finder`.
+| In tavolo, you'll find implementations for basic layers like :ref:`positional_encoding` to complex modules like the Transformer's
+  :ref:`multi_headed_attention`. You'll also find non-layer implementations that can ease development, like the :ref:`learning_rate_finder`.
 | For example, if we wanted to add head a multi-headed attention mechanism into our model and look for the optimal learning rate, it would look something like:
 
 .. code-block:: python3
@@ -28,7 +25,7 @@ Showcase
 
     model = tf.keras.Sequential([
         tf.keras.layers.Embedding(input_dim=vocab_size, output_dim=embedding_size, input_length=max_len),
-        tvl.seq2seq.MultiHeadedSelfAttention(n_heads=8),  # <--- Add self attention
+        tvl.seq2seq.MultiHeadedAttention(n_heads=8),  # <--- Add self attention
         tf.keras.layers.LSTM(n_lstm_units, return_sequences=True),
         tf.keras.layers.Dense(n_hidden_units, activation='relu'),
         tf.keras.layers.Dense(1, activation='sigmoid')])
@@ -59,7 +56,6 @@ Showcase
 
    embeddings
    learning
-   normalization
    seq2seq
    seq2vec
 
