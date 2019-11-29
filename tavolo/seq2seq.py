@@ -3,9 +3,9 @@ from typing import Optional
 import tensorflow as tf
 
 
-class MultiHeadedSelfAttention(tf.keras.layers.Layer):
+class MultiHeadedAttention(tf.keras.layers.Layer):
     """
-    Applies (multi headed) self attention, taken from the Transformer
+    Applies (multi headed) attention, as in the Transformer
     
     
     Arguments
@@ -14,7 +14,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
     - `n_heads` (``int``): Number of attention heads
     - `n_units` (``int``): Number of units (sum of units of all heads), defaults to the last dimension of the input
     - `dropout_rate` (``float``): Rate of outputs to drop in the range [0, 1]
-    - `causality` (``bool``): Use causality (make each time point in output dependent only on previous timepoints of input)
+    - `causal` (``bool``): Use causality (make each time point in output dependent only on previous timepoints of input)
     - `name` (``str``): Layer name
     
     
@@ -42,7 +42,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
     
 
         model = tf.keras.Sequential([tf.keras.layers.Embedding(vocab_size, 8, input_length=max_sequence_length),
-                                     tvl.seq2seq.MultiHeadedSelfAttention()])
+                                     tvl.seq2seq.MultiHeadedAttention()])
 
 
     Apply a single headed self attention
@@ -54,7 +54,21 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
 
 
         model = tf.keras.Sequential([tf.keras.layers.Embedding(vocab_size, 8, input_length=max_sequence_length),
-                                     tvl.seq2seq.MultiHeadedSelfAttention(n_heads=1)])
+                                     tvl.seq2seq.MultiHeadedAttention(n_heads=1)])
+
+    .. note::
+
+        When the intention is to apply attention using a query vector (not self attention), use the optional
+        ``query`` (and ``query_mask``) argument when calling. This means that for using non-self attention
+        this, you must utilize the `functional API`_ or use `model subclassing`_.
+
+
+    .. _`functional API`:
+        https://www.tensorflow.org/guide/keras/functional
+
+    .. _`model subclassing`:
+        https://www.tensorflow.org/guide/keras/custom_layers_and_models#building_models
+
 
     References
     ----------
@@ -69,8 +83,8 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
                  n_heads: int = 4,
                  n_units: Optional[int] = None,
                  dropout_rate: float = 0.,
-                 causality: bool = False,
-                 name: str = 'multi_headed_self_attention',
+                 causal: bool = False,
+                 name: str = 'multi_headed_attention',
                  **kwargs):
         """
         Apply multi-headed attention
@@ -83,7 +97,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
         :param n_heads: Number of attention heads
         :param n_units: Number of units (sum of units of all heads), defaults to the last dimension of the input
         :param dropout_rate: Rate of outputs to drop in the range [0, 1]
-        :param causality: Use causality (make each time point in output dependent only on previous timepoints of input)
+        :param causal: Use causality (make each time point in output dependent only on previous timepoints of input)
         :param name: Layer name
         """
 
@@ -92,7 +106,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
         self.n_heads = n_heads
         self.n_units = n_units
         self.dropout_rate = dropout_rate
-        self.causality = causality
+        self.causal = causal
         self.Q = None
         self.K = None
         self.V = None
@@ -128,6 +142,9 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
                                        name='V',
                                        dtype=self.dtype)
 
+        self.attention = tf.keras.layers.Attention(use_scale=True,
+                                                   causal=self.causal)
+
         self.output_projection = tf.keras.layers.Dense(units=channels,
                                                        activation=None,
                                                        use_bias=False,
@@ -156,69 +173,38 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
 
         if query is None:
             query = inputs  # Self attention
-
-            if query_mask is None:
-                query_mask = mask
+            query_mask = mask
 
         # Linear projections
         Q = self.Q(query)  # shape=(batch_size, time_steps, n_units)
         K = self.K(inputs)  # shape=(batch_size, time_steps, n_units)
         V = self.V(inputs)  # shape=(batch_size, time_steps, n_units)
 
-        # Split and concat
+        # Split and concat, for parallel execution
         Q = tf.concat(tf.split(Q, self.n_heads, axis=2),
                       axis=0)  # shape=(batch_size * n_heads, time_steps, n_units / n_heads)
         K = tf.concat(tf.split(K, self.n_heads, axis=2),
                       axis=0)  # shape=(batch_size * n_heads, time_steps, n_units / n_heads)
         V = tf.concat(tf.split(V, self.n_heads, axis=2),
                       axis=0)  # shape=(batch_size * n_heads, time_steps, n_units_input / n_heads)
+        attention_mask = list()
+        if query_mask is not None:
+            query_mask = tf.tile(query_mask, multiples=(self.n_heads, 1))  # shape=(batch_size * n_heads, time_steps)
+            attention_mask.append(query_mask)
+        if mask is not None:
+            mask = tf.tile(mask, multiples=(self.n_heads, 1))  # shape=(batch_size * n_heads, time_steps)
+            attention_mask.append(mask)
 
         # Attention query
-        QK = tf.matmul(Q, tf.transpose(K, perm=(0, 2, 1)))  # shape=(n_heads * batch_size, time_steps, time_steps)
-
-        # Scale
-        QK /= K.get_shape().as_list()[-1] ** 0.5  # shape=(n_heads * batch_size, time_steps, time_steps)
-
-        # Optional key masking
-        # If no mask will given a mask will be created to to represent the whole sequence minus the padding
-        input_mask = mask if mask is not None else tf.sign(
-            tf.abs(tf.reduce_sum(inputs, axis=-1)))  # shape=(batch_size, time_steps)
-        input_mask = tf.tile(input_mask, multiples=(self.n_heads, 1))  # shape=(batch_size * n_heads, time_steps)
-        input_mask = tf.tile(tf.expand_dims(input_mask, axis=1),
-                             multiples=(
-                                 1, tf.shape(query)[1], 1))  # shape=(batch_size * n_heads, time_steps, time_steps)
-        padding = tf.ones_like(QK) * self.very_small_value  # This will make sure the padded part won't be attended
-        QK = tf.where(tf.equal(input_mask, False), padding, QK)  # shape=(batch_size * n_heads, time_steps, time_steps)
-
-        # Causality
-        if self.causality:
-            causality_mask = tf.ones_like(QK[0, :, :])  # shape=(time_steps, time_steps)
-            causality_mask = tf.linalg.LinearOperatorLowerTriangular(
-                causality_mask).to_dense()  # shape=(time_steps, time_steps)
-            causality_mask = tf.tile(tf.expand_dims(  # shape=(batch_size * n_heads, time_steps, time_steps)
-                causality_mask, axis=0), multiples=(tf.shape(QK)[0], 1, 1))
-
-            padding = tf.ones_like(QK) * self.very_small_value
-            QK = tf.where(tf.equal(causality_mask, False), padding,
-                          QK)  # shape=(batch_size * n_heads, time_steps, time_steps)
-
-        # Create attention weights
-        alphas = tf.nn.softmax(QK)  # shape=(batch_size * n_heads, time_steps, time_steps)
-
-        # Optional query masking
-        query_mask = query_mask if query_mask is not None else tf.sign(
-            tf.abs(tf.reduce_sum(query, axis=-1)))  # shape=(batch_size, time_steps)
-        query_mask = tf.tile(query_mask, multiples=(self.n_heads, 1))  # shape=(batch_size * n_heads, time_steps)
-        query_mask = tf.tile(tf.expand_dims(query_mask, axis=-1), multiples=(
-            1, 1, tf.shape(inputs)[1]))  # shape=(batch_size * n_heads, time_steps, time_steps)
-        alphas *= tf.cast(query_mask, dtype=self.dtype)  # shape=(batch_size * n_heads, time_steps, time_steps)
+        attended = self.attention([Q, V, K],
+                                  mask=attention_mask)  # shape=(batch_size * n_heads, time_steps, n_units / n_heads)
 
         # Dropout
-        alphas = self.dropout(alphas, training=training)  # shape=(batch_size * n_heads, time_steps, time_steps)
+        attended = self.dropout(attended,
+                                training=training)  # shape=(batch_size * n_heads, time_steps, n_units / n_heads)
 
-        # Attend and restore shape
-        outputs = tf.matmul(alphas, V)  # shape=(batch_size * n_heads, time_steps, n_units / n_heads)
-        outputs = tf.concat(tf.split(outputs, self.n_heads, axis=0),
+        # Restore original shape
+        outputs = tf.concat(tf.split(attended, self.n_heads, axis=0),
                             axis=2)  # shape=(batch_size, time_steps, n_units)
 
         # Project output
@@ -231,7 +217,7 @@ class MultiHeadedSelfAttention(tf.keras.layers.Layer):
         base_config['n_heads'] = self.n_heads
         base_config['n_units'] = self.n_units
         base_config['dropout_rate'] = self.dropout_rate
-        base_config['causality'] = self.causality
+        base_config['causal'] = self.causal
 
         return base_config
 

@@ -10,9 +10,9 @@ Layers mapping sequences to sequences
 
 -------
 
-.. _`multi_headed_self_attention`:
+.. _`multi_headed_attention`:
 
-``MultiHeadedSelfAttention``
+``MultiHeadedAttention``
 ++++++++++++++++++++++++++++
 
-.. automodule:: seq2seq.MultiHeadedSelfAttention
+.. automodule:: seq2seq.MultiHeadedAttention
