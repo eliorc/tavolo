@@ -89,7 +89,7 @@ class PositionalEncoding(tf.keras.layers.Layer):
         self.positional_encoding[:, 0::2] = np.sin(self.positional_encoding[:, 0::2])
         self.positional_encoding[:, 1::2] = np.cos(self.positional_encoding[:, 1::2])
 
-        self.positional_encoding = self.add_variable(
+        self.positional_encoding = self.add_weight(
             'embedding_matrix',
             shape=self.positional_encoding.shape,
             initializer=tf.keras.initializers.Constant(self.positional_encoding),
@@ -335,7 +335,7 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
 
     .. _`Dynamic Meta-Embeddings for Improved Sentence Representations`:
         https://arxiv.org/abs/1804.07983
-    """
+add    """
 
     def __init__(self,
                  embedding_matrices: List[tf.keras.layers.Embedding],
