@@ -1,5 +1,5 @@
 __name__ = 'tavolo'
-__version__ = '0.5.0'
+__version__ = '0.5.1'
 
 from . import embeddings
 from . import seq2vec
