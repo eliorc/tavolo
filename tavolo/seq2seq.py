@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 import tensorflow as tf
 
@@ -12,9 +12,27 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
     ---------
     
     - `n_heads` (``int``): Number of attention heads
-    - `n_units` (``int``): Number of units (sum of units of all heads), defaults to the last dimension of the input
-    - `causal` (``bool``): Use causality (make each time point in output dependent only on previous timepoints of input)
+    - `n_units` (``int``): Number of units per head, defaults to the last dimension of the input
+    - `causal` (``bool``): Use causality (make each time point in output dependent only on previous time points of input)
     - `name` (``str``): Layer name
+
+    ``call`` Arguments
+    ------------------
+
+    - ``inputs`` (``List[tf.Tensor]``): List of the following tensors
+
+     - query: Query Tensor of shape [batch_size, Tq, dim]
+     - value: Value Tensor of shape [batch_size, Tv, dim].
+     - key: Optional key Tensor of shape [batch_size, Tv, dim].
+            If not given, will use value for both key and value, which is the most common case
+
+    - ``mask`` (``List[tf.Tensor]``): List of the following tensors
+
+     - query_mask: A boolean mask Tensor of shape [batch_size, Tq].
+                   If given, the output will be zero at the positions where mask==False
+     - value_mask: A boolean mask Tensor of shape [batch_size, Tv].
+                   If given, will apply the mask such that values at positions where mask==False do not
+                   contribute to the result
     
     
     Input shape
@@ -38,28 +56,47 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
     
         import tensorflow as tf
         import tavolo as tvl
-    
 
-        model = tf.keras.Sequential([tf.keras.layers.Embedding(vocab_size, 8, input_length=max_sequence_length),
-                                     tvl.seq2seq.MultiHeadedAttention()])
+        # Inputs
+        inputs = tf.keras.Input(shape=(max_seq_length,), dtype='int32')
+
+        # Embedding lookup
+        embedding_layer = tf.keras.layers.Embedding(max_tokens, dimension)
+        embedded = embedding_layer(inputs)
+
+        # Apply multi headed self attention
+        mh_attention = tvl.seq2seq.MultiHeadedAttention()
+        attended = mh_attention([embedded, embedded])
 
 
-    Apply a single headed self attention
+    Apply a 4 headed attention, using a query vector and masking
 
     .. code-block:: python3
 
         import tensorflow as tf
         import tavolo as tvl
 
+        # Inputs
+        query_input = tf.keras.Input(shape=(max_seq_length,), dtype='int32')
+        value_input = tf.keras.Input(shape=(max_seq_length,), dtype='int32')
 
-        model = tf.keras.Sequential([tf.keras.layers.Embedding(vocab_size, 8, input_length=max_sequence_length),
-                                     tvl.seq2seq.MultiHeadedAttention(n_heads=1)])
+        # Embedding lookup
+        embedding_layer = tf.keras.layers.Embedding(max_tokens, dimension, mask_zero=True)
+        embedded_query = embedding_layer(query_input)
+        embedded_value = embedding_layer(value_input)
+
+        # Masks
+        query_mask = embedding_layer.compute_mask(query_input)
+        value_mask = embedding_layer.compute_mask(value_input)
+
+        # Apply multi headed self attention
+        mh_attention = tvl.seq2seq.MultiHeadedAttention()
+        attended = mh_attention([embedded_query, embedded_value], mask=[query_mask, value_mask])
 
     .. note::
 
-        When the intention is to apply attention using a query vector (not self attention), use the optional
-        ``query`` (and ``query_mask``) argument when calling. This means that for using non-self attention
-        this, you must utilize the `functional API`_ or use `model subclassing`_.
+        Since the query and value should be passed separately, it is recommended to use the `functional API`_ or
+        `model subclassing`_ to use this layer.
 
 
     .. _`functional API`:
@@ -85,16 +122,10 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
                  name: str = 'multi_headed_attention',
                  **kwargs):
         """
-        Apply multi-headed attention
-
-        Input dimensions: (batch_size, time_steps, channels)
-        Output dimensions: (batch_size, time_steps, channels)
-
-        Reference: https://arxiv.org/abs/1706.03762
 
         :param n_heads: Number of attention heads
-        :param n_units: Number of units (sum of units of all heads), defaults to the last dimension of the input
-        :param causal: Use causality (make each time point in output dependent only on previous timepoints of input)
+        :param n_units: Number of units per head, defaults to the last dimension of the input
+        :param causal: Use causality (make each time point in output dependent only on previous time points of input)
         :param name: Layer name
         """
 
@@ -106,39 +137,38 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
         self.Q = None
         self.K = None
         self.V = None
+        self.attention = None
         self.output_projection = None
         self.very_small_value = (-2 ** 32 + 1)  # Used for padding to avoid attending
 
     def build(self, input_shape):
         # Units
-        channels = input_shape[-1]
+        channels = input_shape[0][-1]
         self.n_units = self.n_units or channels
 
-        # Test units - n_heads validity
-        if self.n_units % self.n_heads != 0:
-            raise ValueError('n_units must be divisible by n_heads')
-
         # Linear projections
-        self.Q = tf.keras.layers.Dense(units=self.n_units,
+        self.Q = tf.keras.layers.Dense(units=self.n_units * self.n_heads,
                                        activation=None,
                                        use_bias=False,
                                        name='Q',
                                        dtype=self.dtype)
 
-        self.K = tf.keras.layers.Dense(units=self.n_units,
+        self.K = tf.keras.layers.Dense(units=self.n_units * self.n_heads,
                                        activation=None,
                                        use_bias=False,
                                        name='K',
                                        dtype=self.dtype)
 
-        self.V = tf.keras.layers.Dense(units=self.n_units,
+        self.V = tf.keras.layers.Dense(units=self.n_units * self.n_heads,
                                        activation=None,
                                        use_bias=False,
                                        name='V',
                                        dtype=self.dtype)
 
         self.attention = tf.keras.layers.Attention(use_scale=True,
-                                                   causal=self.causal)
+                                                   causal=self.causal,
+                                                   name='attention',
+                                                   dtype=self.dtype)
 
         self.output_projection = tf.keras.layers.Dense(units=channels,
                                                        activation=None,
@@ -149,31 +179,43 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
         super().build(input_shape)
 
     def compute_mask(self, inputs, mask=None):
-        return mask
+        if mask is None:
+            return mask
+
+        return mask[0]
 
     def call(self, inputs,
-             mask: Optional[tf.Tensor] = None,
-             query: Optional[tf.Tensor] = None,
-             query_mask: Optional[tf.Tensor] = None,
+             mask: Optional[List[tf.Tensor]] = None,
              training: bool = False,
              **kwargs) -> tf.Tensor:
         """
+        :param inputs: List of the following tensors:
 
-        :param inputs: Inputs to be used as K and V (ex. word embeddings)
-        :param mask: Mask from the previous layer
-        :param query: Query to be used as Q
-        :param query_mask: Mask for the query
+         - query: Query Tensor of shape [batch_size, Tq, dim]
+         - value: Value Tensor of shape [batch_size, Tv, dim].
+         - key: Optional key Tensor of shape [batch_size, Tv, dim].
+                If not given, will use value for both key and value, which is the most common case
+
+        :param mask: List of the following tensors:
+
+         - query_mask: A boolean mask Tensor of shape [batch_size, Tq].
+                       If given, the output will be zero at the positions where mask==False
+         - value_mask: A boolean mask Tensor of shape [batch_size, Tv].
+                       If given, will apply the mask such that values at positions where mask==False do not
+                       contribute to the result
+
         :param training: Is training
         """
 
-        if query is None:
-            query = inputs  # Self attention
-            query_mask = mask
+        # Unpack inputs
+        query = inputs[0]
+        value = inputs[1]
+        key = inputs[2] if len(inputs) > 2 else value
 
         # Linear projections
         Q = self.Q(query)  # shape=(batch_size, time_steps, n_units)
-        K = self.K(inputs)  # shape=(batch_size, time_steps, n_units)
-        V = self.V(inputs)  # shape=(batch_size, time_steps, n_units)
+        K = self.K(key)  # shape=(batch_size, time_steps, n_units)
+        V = self.V(value)  # shape=(batch_size, time_steps, n_units)
 
         # Split and concat, for parallel execution
         Q = tf.concat(tf.split(Q, self.n_heads, axis=2),
@@ -182,17 +224,15 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
                       axis=0)  # shape=(batch_size * n_heads, time_steps, n_units / n_heads)
         V = tf.concat(tf.split(V, self.n_heads, axis=2),
                       axis=0)  # shape=(batch_size * n_heads, time_steps, n_units_input / n_heads)
-        attention_mask = list()
-        if query_mask is not None:
-            query_mask = tf.tile(query_mask, multiples=(self.n_heads, 1))  # shape=(batch_size * n_heads, time_steps)
-            attention_mask.append(query_mask)
-        if mask is not None:
-            mask = tf.tile(mask, multiples=(self.n_heads, 1))  # shape=(batch_size * n_heads, time_steps)
-            attention_mask.append(mask)
 
         # Attention query
-        attended = self.attention([Q, V, K],
-                                  mask=attention_mask)  # shape=(batch_size * n_heads, time_steps, n_units / n_heads)
+        if mask is None or len(mask) == 0:
+            attended = self.attention([Q, V, K])  # shape=(batch_size * n_heads, time_steps, n_units / n_heads)
+        else:
+            tiled_mask = [tf.tile(m, multiples=(self.n_heads, 1)) for m in
+                          mask]  # shape=(batch_size * n_heads, time_steps)
+            attended = self.attention([Q, V, K],
+                                      mask=tiled_mask)  # shape=(batch_size * n_heads, time_steps, n_units / n_heads)
 
         # Restore original shape
         outputs = tf.concat(tf.split(attended, self.n_heads, axis=0),

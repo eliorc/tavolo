@@ -2,6 +2,7 @@ from typing import Optional, List
 
 import numpy as np
 import tensorflow as tf
+from tensorflow.python.ops import math_ops
 
 
 class PositionalEncoding(tf.keras.layers.Layer):
@@ -67,6 +68,7 @@ class PositionalEncoding(tf.keras.layers.Layer):
                  name: str = 'positional_encoding',
                  **kwargs):
         """
+
         :param max_sequence_length: Maximum sequence length of input
         :param embedding_dim: Dimensionality of the of the input's last dimension
         :param normalize_factor: Normalize factor
@@ -104,12 +106,13 @@ class PositionalEncoding(tf.keras.layers.Layer):
     def call(self, inputs,
              mask: Optional[tf.Tensor] = None,
              **kwargs) -> tf.Tensor:
-        output = inputs + self.positional_encoding
+        output = inputs + self.positional_encoding  # shape=(batch_size, time_steps, channels)
+
         if mask is not None:
             output = tf.where(tf.tile(tf.expand_dims(mask, axis=-1), multiples=[1, 1, inputs.shape[-1]]), output,
-                              inputs)
+                              inputs)  # shape=(batch_size, time_steps, channels)
 
-        return output  # shape=(batch_size, time_steps, channels)
+        return output
 
     def get_config(self):
         base_config = super().get_config()
@@ -132,8 +135,10 @@ class DynamicMetaEmbedding(tf.keras.layers.Layer):
     Arguments
     ---------
 
-    - `embedding_matrices` (``List[tf.keras.layers.Embedding]``): List of embedding layers
+    - `embedding_matrices` (``List[np.ndarray]``): List of embedding matrices
     - `output_dim` (``int``): Dimension of the output embedding
+    - `mask_zero` (``bool``): Whether or not the input value 0 is a special "padding" value that should be masked out
+    - `input_length` (``Optional[int]``): Parameter to be passed into internal ``tf.keras.layers.Embedding`` matrices
     - `name` (``str``): Layer name
 
 
@@ -160,27 +165,22 @@ class DynamicMetaEmbedding(tf.keras.layers.Layer):
         import tensorflow as tf
         import tavolo as tvl
 
-        w2v_embedding = tf.keras.layers.Embedding(num_words,
-                                                  EMBEDDING_DIM,
-                                                  embeddings_initializer=tf.keras.initializers.Constant(w2v_matrix),
-                                                  input_length=MAX_SEQUENCE_LENGTH,
-                                                  trainable=False)
+        w2v_embedding = np.array(...)  # Pre-trained embedding matrix
 
-        glove_embedding = tf.keras.layers.Embedding(num_words,
-                                                    EMBEDDING_DIM,
-                                                    embeddings_initializer=tf.keras.initializers.Constant(glove_matrix),
-                                                    input_length=MAX_SEQUENCE_LENGTH,
-                                                    trainable=False)
+        glove_embedding = np.array(...)  # Pre-trained embedding matrix
 
         model = tf.keras.Sequential([tf.keras.layers.Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32'),
-                                     tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding])])  # Use DME embeddings
+                                     tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding],
+                                                                         input_length=MAX_SEQUENCE_LENGTH)])  # Use DME embeddings
 
     Using the same example as above, it is possible to define the output's channel size
 
     .. code-block:: python3
 
         model = tf.keras.Sequential([tf.keras.layers.Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32'),
-                                     tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding], output_dim=200)])
+                                     tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding],
+                                                                         input_length=MAX_SEQUENCE_LENGTH,
+                                                                         output_dim=200)])
 
 
     References
@@ -193,25 +193,41 @@ class DynamicMetaEmbedding(tf.keras.layers.Layer):
     """
 
     def __init__(self,
-                 embedding_matrices: List[tf.keras.layers.Embedding],
+                 embedding_matrices: List[np.ndarray],
                  output_dim: Optional[int] = None,
+                 mask_zero: bool = False,
+                 input_length: Optional[int] = None,
                  name: str = 'dynamic_meta_embedding',
                  **kwargs):
         """
-        :param embedding_matrices: List of embedding layers
+
+        :param embedding_matrices: List of embedding matrices
         :param output_dim: Dimension of the output embedding
+        :param mask_zero: Whether or not the input value 0 is a special "padding" value that should be masked out
+        :param input_length: Parameter to be passed into internal ``tf.keras.layers.Embedding`` matrices
         :param name: Layer name
         """
         super().__init__(name=name, **kwargs)
 
+        self.mask_zero = mask_zero
+        self.input_length = input_length
+        self.base_matrices_shapes = [e.shape for e in embedding_matrices]
+
         # Validate all the embedding matrices have the same vocabulary size
-        if not len(set((e.input_dim for e in embedding_matrices))) == 1:
+        if not len(set((e.shape[0] for e in embedding_matrices))) == 1:
             raise ValueError('Vocabulary sizes (first dimension) of all embedding matrices must match')
+        if not set((e.ndim for e in embedding_matrices)) == {2}:
+            raise ValueError('All embedding matrices should have only 2 dimensions')
 
         # If no output_dim is supplied, use the maximum dimension from the given matrices
-        self.output_dim = output_dim or min([e.output_dim for e in embedding_matrices])
+        self.output_dim = output_dim or min([e.shape[1] for e in embedding_matrices])
 
-        self.embedding_matrices = embedding_matrices
+        self.embedding_matrices = [tf.keras.layers.Embedding(input_dim=e.shape[0],
+                                                             output_dim=e.shape[1],
+                                                             embeddings_initializer=tf.keras.initializers.Constant(e),
+                                                             input_length=input_length,
+                                                             name='embedding_matrix_{}'.format(i))
+                                   for i, e in enumerate(embedding_matrices)]
         self.n_embeddings = len(self.embedding_matrices)
 
         self.projections = [tf.keras.layers.Dense(units=self.output_dim,
@@ -225,11 +241,14 @@ class DynamicMetaEmbedding(tf.keras.layers.Layer):
                                                dtype=self.dtype)
 
     def compute_mask(self, inputs, mask=None):
-        return self.projections[0].compute_mask(
-            inputs, mask=self.embedding_matrices[0].compute_mask(inputs, mask=mask))
+        if not self.mask_zero:
+            return None
+
+        return math_ops.not_equal(inputs, 0)
 
     def call(self, inputs,
              **kwargs) -> tf.Tensor:
+
         batch_size, time_steps = inputs.shape[:2]
 
         # Embedding lookup
@@ -254,16 +273,17 @@ class DynamicMetaEmbedding(tf.keras.layers.Layer):
 
     def get_config(self):
         base_config = super().get_config()
-        base_config['embedding_matrices'] = [e.get_config() for e in self.embedding_matrices]
+        base_config['base_matrices_shapes'] = self.base_matrices_shapes
         base_config['output_dim'] = self.output_dim
+        base_config['mask_zero'] = self.mask_zero
+        base_config['input_length'] = self.input_length
 
         return base_config
 
     @classmethod
     def from_config(cls, config: dict):
-        embedding_matrices = [tf.keras.layers.Embedding.from_config(e_conf) for e_conf in
-                              config.pop('embedding_matrices')]
-        return cls(embedding_matrices=embedding_matrices, **config)
+        initial_matrices = [np.zeros(shape=s) for s in config.pop('base_matrices_shapes')]
+        return cls(embedding_matrices=initial_matrices, **config)
 
 
 class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
@@ -277,8 +297,10 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
     Arguments
     ---------
 
-    - `embedding_matrices` (``List[tf.keras.layers.Embedding]``): List of embedding layers
+    - `embedding_matrices` (``List[np.ndarray]``): List of embedding matrices
     - `output_dim` (``int``): Dimension of the output embedding
+    - `mask_zero` (``bool``): Whether or not the input value 0 is a special "padding" value that should be masked out
+    - `input_length` (``Optional[int]``): Parameter to be passed into internal ``tf.keras.layers.Embedding`` matrices
     - `n_lstm_units` (``int``): Number of units in each LSTM, (notated as `m` in the original article)
     - `name` (``str``): Layer name
 
@@ -306,27 +328,22 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
         import tensorflow as tf
         import tavolo as tvl
 
-        w2v_embedding = tf.keras.layers.Embedding(num_words,
-                                                  EMBEDDING_DIM,
-                                                  embeddings_initializer=tf.keras.initializers.Constant(w2v_matrix),
-                                                  input_length=MAX_SEQUENCE_LENGTH,
-                                                  trainable=False)
+        w2v_embedding = np.array(...)  # Pre-trained embedding matrix
 
-        glove_embedding = tf.keras.layers.Embedding(num_words,
-                                                    EMBEDDING_DIM,
-                                                    embeddings_initializer=tf.keras.initializers.Constant(glove_matrix),
-                                                    input_length=MAX_SEQUENCE_LENGTH,
-                                                    trainable=False)
+        glove_embedding = np.array(...)  # Pre-trained embedding matrix
 
         model = tf.keras.Sequential([tf.keras.layers.Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32'),
-                                     tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding])])  # Use CDME embeddings
+                                     tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding],
+                                                                         input_length=MAX_SEQUENCE_LENGTH)])  # Use CDME embeddings
 
     Using the same example as above, it is possible to define the output's channel size and number of units in each LSTM
 
     .. code-block:: python3
 
         model = tf.keras.Sequential([tf.keras.layers.Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32'),
-                                     tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding], n_lstm_units=128, output_dim=200)])
+                                     tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding],
+                                                                          input_length=MAX_SEQUENCE_LENGTH,
+                                                                          n_lstm_units=128, output_dim=200)])
 
     References
     ----------
@@ -335,33 +352,47 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
 
     .. _`Dynamic Meta-Embeddings for Improved Sentence Representations`:
         https://arxiv.org/abs/1804.07983
-add    """
+    """
 
     def __init__(self,
-                 embedding_matrices: List[tf.keras.layers.Embedding],
+                 embedding_matrices: List[np.ndarray],
                  output_dim: Optional[int] = None,
+                 mask_zero: bool = False,
+                 input_length: Optional[int] = None,
                  n_lstm_units: int = 2,
                  name: str = 'contextual_dynamic_meta_embedding',
                  **kwargs):
         """
-        :param embedding_matrices: List of embedding layers
-        :param n_lstm_units: Number of units in each LSTM, (notated as `m` in the original article)
+        :param embedding_matrices: List of embedding matrices
         :param output_dim: Dimension of the output embedding
+        :param mask_zero: Whether or not the input value 0 is a special "padding" value that should be masked out
+        :param input_length: Parameter to be passed into internal ``tf.keras.layers.Embedding`` matrices
+        :param n_lstm_units: Number of units in each LSTM, (notated as `m` in the original article)
         :param name: Layer name
         """
 
         super().__init__(name=name, **kwargs)
 
+        self.mask_zero = mask_zero
+        self.input_length = input_length
+        self.n_lstm_units = n_lstm_units
+        self.base_matrices_shapes = [e.shape for e in embedding_matrices]
+
         # Validate all the embedding matrices have the same vocabulary size
-        if not len(set((e.input_dim for e in embedding_matrices))) == 1:
+        if not len(set((e.shape[0] for e in embedding_matrices))) == 1:
             raise ValueError('Vocabulary sizes (first dimension) of all embedding matrices must match')
+        if not set((e.ndim for e in embedding_matrices)) == {2}:
+            raise ValueError('All embedding matrices should have only 2 dimensions')
 
         # If no output_dim is supplied, use the maximum dimension from the given matrices
-        self.output_dim = output_dim or min([e.output_dim for e in embedding_matrices])
+        self.output_dim = output_dim or min([e.shape[1] for e in embedding_matrices])
 
-        self.n_lstm_units = n_lstm_units
-
-        self.embedding_matrices = embedding_matrices
+        self.embedding_matrices = [tf.keras.layers.Embedding(input_dim=e.shape[0],
+                                                             output_dim=e.shape[1],
+                                                             embeddings_initializer=tf.keras.initializers.Constant(e),
+                                                             input_length=input_length,
+                                                             name='embedding_matrix_{}'.format(i))
+                                   for i, e in enumerate(embedding_matrices)]
         self.n_embeddings = len(self.embedding_matrices)
 
         self.projections = [tf.keras.layers.Dense(units=self.output_dim,
@@ -380,8 +411,10 @@ add    """
                                                dtype=self.dtype)
 
     def compute_mask(self, inputs, mask=None):
-        return self.projections[0].compute_mask(
-            inputs, mask=self.embedding_matrices[0].compute_mask(inputs, mask=mask))
+        if not self.mask_zero:
+            return None
+
+        return math_ops.not_equal(inputs, 0)
 
     def call(self, inputs,
              **kwargs) -> tf.Tensor:
@@ -416,14 +449,15 @@ add    """
 
     def get_config(self):
         base_config = super().get_config()
-        base_config['embedding_matrices'] = [e.get_config() for e in self.embedding_matrices]
+        base_config['base_matrices_shapes'] = self.base_matrices_shapes
         base_config['output_dim'] = self.output_dim
+        base_config['mask_zero'] = self.mask_zero
+        base_config['input_length'] = self.input_length
         base_config['n_lstm_units'] = self.n_lstm_units
 
         return base_config
 
     @classmethod
     def from_config(cls, config: dict):
-        embedding_matrices = [tf.keras.layers.Embedding.from_config(e_conf) for e_conf in
-                              config.pop('embedding_matrices')]
-        return cls(embedding_matrices=embedding_matrices, **config)
+        initial_matrices = [np.zeros(shape=s) for s in config.pop('base_matrices_shapes')]
+        return cls(embedding_matrices=initial_matrices, **config)

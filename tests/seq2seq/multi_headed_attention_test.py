@@ -19,15 +19,16 @@ def test_shapes():
                                                        n_units=n_units_mh,
                                                        name='mh_self_attention')
 
-    output_single, output_mh = single_self_attention(inputs_3d), multi_headed_self_attention(inputs_3d)
+    output_single, output_mh = single_self_attention([inputs_3d, inputs_3d]), multi_headed_self_attention(
+        [inputs_3d, inputs_3d])
 
     # Assert correctness of output shapes
     assert output_single.shape == input_shape_3d
     assert output_mh.shape == input_shape_3d
 
 
-def test_query():
-    """ Test the ability to use query separately """
+def test_query_key_value():
+    """ Test the ability to use query, key and value separately """
     # Inputs shape
     input_shape_3d = (56, 10, 30)
     n_units_mh = 128
@@ -38,8 +39,8 @@ def test_query():
                                                   n_units=n_units_mh,
                                                   name='mh_attention')
 
-    output_self, output_non_self = multi_headed_attention(inputs_3d), \
-                                   multi_headed_attention(inputs_3d, query=inputs_3d)
+    output_self, output_non_self = multi_headed_attention([inputs_3d, inputs_3d]), \
+                                   multi_headed_attention([inputs_3d, inputs_3d, inputs_3d])
 
     assert tf.reduce_all(tf.math.equal(output_self, output_non_self))
 
@@ -56,7 +57,7 @@ def test_masking():
     multi_headed_self_attention = MultiHeadedAttention(n_heads=3,
                                                        name='mh_self_attention')
 
-    result = multi_headed_self_attention(inputs_3d, mask=mask)
+    result = multi_headed_self_attention([inputs_3d, inputs_3d], mask=[mask, mask])
 
     assert result.shape == input_shape_3d
 
@@ -75,12 +76,12 @@ def test_causality():
                                                        causal=True,
                                                        name='mh_self_attention')
 
-    result = multi_headed_self_attention(inputs_3d)
+    result = multi_headed_self_attention([inputs_3d, inputs_3d])
 
     # Change last step
     inputs_3d_ = tf.concat([inputs_3d[:, :-1, :], tf.random.normal((input_shape_3d[0], 1, input_shape_3d[-1]))], axis=1)
 
-    result_ = multi_headed_self_attention(inputs_3d_)
+    result_ = multi_headed_self_attention([inputs_3d_, inputs_3d_])
 
     # Assert last step is different but the rest not affected
     assert (result[:, :-1, :].numpy() == result_[:, :-1, :].numpy()).all()  # Without last step
@@ -94,23 +95,3 @@ def test_serialization():
     restored = MultiHeadedAttention.from_config(simple.get_config())
 
     assert restored.get_config() == simple.get_config()
-
-
-def test_exceptions():
-    """ Text for expected exceptions """
-    # Inputs shape
-    input_shape_3d = (56, 10, 30)
-    n_units_mh = 99
-    n_heads = 4
-
-    inputs_3d = tf.random.normal(shape=input_shape_3d)
-
-    multi_headed_self_attention = MultiHeadedAttention(n_heads=n_heads,
-                                                       n_units=n_units_mh,
-                                                       name='mh_self_attention')
-
-    # n_units % n_heads != 0, not divisible
-    with pytest.raises(ValueError) as excinfo:
-        multi_headed_self_attention(inputs_3d)
-
-    assert 'n_units must be divisible by n_heads' in str(excinfo.value)

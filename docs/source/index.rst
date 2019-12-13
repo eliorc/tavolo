@@ -16,7 +16,7 @@ Showcase
 | tavolo's API is straightforward and adopting its modules is as easy as it gets.
 | In tavolo, you'll find implementations for basic layers like :ref:`positional_encoding` to complex modules like the Transformer's
   :ref:`multi_headed_attention`. You'll also find non-layer implementations that can ease development, like the :ref:`learning_rate_finder`.
-| For example, if we wanted to add head a multi-headed attention mechanism into our model and look for the optimal learning rate, it would look something like:
+| For example, if we wanted to add head a Yang-style attention mechanism into our model and look for the optimal learning rate, it would look something like:
 
 .. code-block:: python3
 
@@ -25,12 +25,11 @@ Showcase
 
     model = tf.keras.Sequential([
         tf.keras.layers.Embedding(input_dim=vocab_size, output_dim=embedding_size, input_length=max_len),
-        tvl.seq2seq.MultiHeadedAttention(n_heads=8),  # <--- Add self attention
-        tf.keras.layers.LSTM(n_lstm_units, return_sequences=True),
+        tvl.seq2vec.YangAttention(n_units=64),  # <--- Add Yang style attention
         tf.keras.layers.Dense(n_hidden_units, activation='relu'),
         tf.keras.layers.Dense(1, activation='sigmoid')])
 
-    model.compile(optimizer=tf.keras.optimizers.SGD(), loss=tf.keras.losses.CategoricalCrossentropy())
+    model.compile(optimizer=tf.keras.optimizers.SGD(), loss=tf.keras.losses.BinaryCrossentropy())
 
     # Run learning rate range test
     lr_finder = tvl.learning.LearningRateFinder(model=model)
