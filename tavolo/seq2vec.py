@@ -56,12 +56,6 @@ class YangAttention(tf.keras.layers.Layer):
                  name: str = 'yang_attention',
                  **kwargs):
         """
-        Apply attention with learned weights.
-
-        Input dimensions: (batch_size, time_steps, channels)
-        Output dimensions: (batch_size, channels)
-
-        Reference: https://www.cs.cmu.edu/~./hovy/papers/16HLT-hierarchical-attention-networks.pdf
 
         :param n_units: Attention's variables units
         :param name: Layer name
@@ -83,7 +77,7 @@ class YangAttention(tf.keras.layers.Layer):
                                        dtype=self.dtype)
 
     def compute_mask(self, inputs, mask=None):
-        return mask
+        return None
 
     def call(self, inputs,
              mask: Optional[tf.Tensor] = None,
