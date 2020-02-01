@@ -22,9 +22,9 @@ workflows:
                 - master
                 - dev
 jobs:
-  test-3.7: &test-template
+  test-3.8: &test-template
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.8
     steps:
       # Checkout repository
       - checkout
@@ -56,11 +56,11 @@ jobs:
             source venv/bin/activate
             pytest -s --cov=tavolo tests/
             codecov
+  test-3.7:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.7
   test-3.6:
     <<: *test-template
     docker:
       - image: circleci/python:3.6
-  test-3.5:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5
