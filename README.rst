@@ -6,10 +6,10 @@
 
 ------------
 
-.. image:: https://img.shields.io/badge/python-3.5%20%7C%203.6%20%7C%203.7-blue.svg
+.. image:: https://img.shields.io/badge/python-3.5+-blue.svg
     :alt: Supported Python versions
 
-.. image:: https://img.shields.io/badge/tensorflow-2.0%20%7C%202.1-orange.svg
+.. image:: https://img.shields.io/badge/tensorflow-2.2+-orange.svg
     :alt: Supported TensorFlow versions
 
 .. image:: https://codecov.io/gh/eliorc/tavolo/branch/master/graph/badge.svg
