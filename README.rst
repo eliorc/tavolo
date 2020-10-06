@@ -40,9 +40,10 @@ Showcase
 --------
 
 | tavolo's API is straightforward and adopting its modules is as easy as it gets.
-| In tavolo, you'll find implementations for basic layers like `PositionalEncoding`_ to complex modules like the Transformer's
-  `MultiHeadedAttention`_. You'll also find non-layer implementations that can ease development, like the `LearningRateFinder`_.
-| For example, if we wanted to add head a Yang-style attention mechanism into our model and look for the optimal learning rate, it would look something like:
+| In tavolo, you'll find implementations for basic like `PositionalEncoding`_ and non-layer implementations that
+  can ease development, like the `LearningRateFinder`_.
+| For example, if we wanted to add head a Yang-style attention mechanism into our model and look for the optimal
+  learning rate, it would look something like:
 
 .. code-block:: python3
 
