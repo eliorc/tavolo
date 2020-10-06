@@ -19,6 +19,15 @@ Modules for altering the learning process
 
 -------
 
+.. _`datamap`:
+
+``DataMapCallback``
+++++++++++++++++++++++++++++++
+
+.. automodule:: learning.DataMapCallback
+
+-------
+
 .. _`learning_rate_finder`:
 
 ``LearningRateFinder``
