@@ -182,8 +182,8 @@ def test_classification(dataset: str, model: str,
     """
 
     # Retrieve values
-    dataset: tf.data.Dataset = request.getfixturevalue(dataset)
-    model: tf.keras.Model = request.getfixturevalue(model)
+    dataset = request.getfixturevalue(dataset)  # tf.data.Dataset
+    model = request.getfixturevalue(model)  # tf.keras.Model
 
     # Batch dataset
     dataset = dataset.batch(10)
