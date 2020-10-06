@@ -186,20 +186,21 @@ class DataMapCallback(tf.keras.callbacks.Callback):
 
     - `dataset` (``tf.data.: Dataset``): Usually, as the paper suggests, this is the training dataset. It should be:
 
-        - Non-shuffled, so each iteration over the dataset should yield samples in the same order
-        - Already batched, the ``.batch(n)`` method should already be applied on this dataset
-        - Should yield batches of ``(features, labels)``, sample weights are not supported
+        1. Non-shuffled, so each iteration over the dataset should yield samples in the same order
+        2. Already batched, the ``.batch(n)`` method should already be applied on this dataset
+        3. Should yield batches of ``(features, labels)``, sample weights are not supported
 
-    - `outputs_to_probabilities` (``Optional[Callable[[Any], tf.Tensor]]``): Callable to convert model's output to
-        probabilities. Use this if the model outputs logits, dictionary or any other form which is not a tensor
-        of probabilities. Defaults to ``None``.
-    - `sparse_labels` (``bool``): Set to ``True`` if the labels are given as integers (not one hot encoded). Defaults
+    - | `outputs_to_probabilities` (``Optional[Callable[[Any], tf.Tensor]]``):
+        Callable to convert model's output to probabilities. Use this if the model outputs logits, dictionary or any
+        other form which is not a tensor of probabilities. Defaults to ``None``.
+
+    - | `sparse_labels` (``bool``): Set to ``True`` if the labels are given as integers (not one hot encoded). Defaults
         to ``False``.
 
     Attributes
     ----------
 
-    - `gold_labels_probabilities` (``np.ndarray``): Gold label predicted probabilities. With the shape of
+    - | `gold_labels_probabilities` (``np.ndarray``): Gold label predicted probabilities. With the shape of
         ``(n_samples, n_epochs)`` and ``(i, j)`` is the probability of the gold label for sample ``i`` at epoch ``j``.
     - `confidence` (``np.ndarray``): Mean of true label probability across epochs.
     - `variability` (``np.ndarray``): Standard deviation of true label probability across epochs.
