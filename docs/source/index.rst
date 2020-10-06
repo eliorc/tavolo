@@ -14,8 +14,8 @@ Showcase
 --------
 
 | tavolo's API is straightforward and adopting its modules is as easy as it gets.
-| In tavolo, you'll find implementations for basic layers like :ref:`positional_encoding` to complex modules like the Transformer's
-  :ref:`multi_headed_attention`. You'll also find non-layer implementations that can ease development, like the :ref:`learning_rate_finder`.
+| In tavolo, you'll find implementations for layers like :ref:`positional_encoding` and non-layer implementations
+  that can ease development, like the :ref:`learning_rate_finder`.
 | For example, if we wanted to add head a Yang-style attention mechanism into our model and look for the optimal learning rate, it would look something like:
 
 .. code-block:: python3
@@ -55,7 +55,6 @@ Showcase
 
    embeddings
    learning
-   seq2seq
    seq2vec
 
 
