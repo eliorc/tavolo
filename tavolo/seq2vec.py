@@ -76,9 +76,11 @@ class YangAttention(tf.keras.layers.Layer):
                                        initializer=tf.keras.initializers.RandomNormal(stddev=0.1),
                                        dtype=self.dtype)
 
+    # noinspection PyMethodMayBeStatic, PyUnusedLocal
     def compute_mask(self, inputs, mask=None):
         return None
 
+    # noinspection PyUnusedLocal
     def call(self, inputs,
              mask: Optional[tf.Tensor] = None,
              **kwargs) -> tf.Tensor:
