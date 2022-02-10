@@ -101,6 +101,7 @@ class PositionalEncoding(tf.keras.layers.Layer):
 
         super().build(input_shape)
 
+    # noinspection
     def compute_mask(self, inputs, mask=None):
         return mask
 

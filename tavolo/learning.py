@@ -134,13 +134,13 @@ class CyclicLearningRateCallback(tf.keras.callbacks.Callback):
 
         return clr
 
+    # noinspection PyUnusedLocal
     def on_train_begin(self, logs: Optional[dict] = None):
-
-        logs = logs or dict()
 
         # Apply learning rate to optimizer
         tf.keras.backend.set_value(self.model.optimizer.lr, self.base_lr if self.clr_iterations == 0 else self.clr())
 
+    # noinspection PyUnusedLocal
     def on_train_batch_end(self, batch: tf.Tensor, logs: Optional[dict] = None):
 
         logs = logs or dict()
@@ -291,6 +291,7 @@ class DataMapCallback(tf.keras.callbacks.Callback):
         # e.g. self._gold_labels_probabilities[i] == gold label probabilities at the end of epoch i
         self._gold_labels_probabilities = None
 
+    # noinspection PyUnusedLocal
     def on_epoch_end(self, epoch, logs=None):
 
         # Gather gold label probabilities over the dataset
@@ -492,6 +493,7 @@ class LearningRateFinder:
 
         return self._learning_rates, self._losses
 
+    # noinspection PyUnusedLocal
     def _on_batch_end(self, batch: tf.Tensor, logs: dict):
         # Save learning rate and corresponding loss
         self._learning_rates.append(
