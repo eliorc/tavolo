@@ -22,9 +22,11 @@ class CyclicLearningRateCallback(tf.keras.callbacks.Callback):
     - `base_lr` (``float``): Lower boundary of each cycle
     - `max_lr` (``float``): Upper boundary of each cycle, may not be reached depending on the scaling function
     - `step_size` (``int``): Number of batches per half-cycle (step)
-    - `scale_scheme` (``str``): One of ``{'triangular', 'triangular2', 'exp_range'}``. If ``scale_fn`` is passed, this argument is ignored
+    - `scale_scheme` (``str``): One of ``{'triangular', 'triangular2', 'exp_range'}``. If ``scale_fn`` is passed,
+        this argument is ignored
     - `gamma` (``float``): Constant used for the ``exp_range``'s ``scale_fn``, used as (``gamma ** <cycle iterations>``)
-    - `scale_fn` (``callable``): Custom scaling policy, accepts cycle index / iterations depending on the ``scale_mode`` and must return a value in the range [0, 1]. If passed, ignores ``scale_scheme``
+    - `scale_fn` (``callable``): Custom scaling policy, accepts cycle index / iterations depending on the ``scale_mode``
+        and must return a value in the range [0, 1]. If passed, ignores ``scale_scheme``
     - `scale_mode` (``str``): Define whether ``scale_fn`` is evaluated on cycle index or cycle iterations
 
 
@@ -49,7 +51,8 @@ class CyclicLearningRateCallback(tf.keras.callbacks.Callback):
         import tensorflow as tf
         import tavolo as tvl
 
-        clr = tvl.learning.CyclicLearningRateCallback(base_lr=0.001, max_lr=0.006, step_size=2000, scale_scheme='triangular2')
+        clr = tvl.learning.CyclicLearningRateCallback(base_lr=0.001, max_lr=0.006, step_size=2000,
+                                                      scale_scheme='triangular2')
 
         model.fit(X_train, Y_train, callbacks=[clr])
 
@@ -442,8 +445,9 @@ class LearningRateFinder:
           - A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs)
           - A dict mapping input names to the corresponding array/tensors, if the model has named inputs
           - A ``tf.data`` dataset or a dataset iterator. Should return a tuple of either ``(inputs, targets)`` or
-          ``(inputs, targets, sample_weights)``
-          - A generator or ``keras.utils.Sequence`` returning ``(inputs, targets)`` or ``(inputs, targets, sample weights)``
+            ``(inputs, targets, sample_weights)``
+          - A generator or ``keras.utils.Sequence`` returning ``(inputs, targets)`` or
+            ``(inputs, targets, sample weights)``
         :param y: Target data. Like the input data `x`,
           it could be either Numpy array(s) or TensorFlow tensor(s).
           It should be consistent with ``x`` (you cannot have Numpy inputs and
