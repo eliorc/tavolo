@@ -7,8 +7,8 @@ from tensorflow.python.ops import math_ops
 
 class PositionalEncoding(tf.keras.layers.Layer):
     """
-    Create a positional encoding layer, usually added on top of an embedding layer.
-    Embeds information about the position of the elements using the formula
+    Positional encoding layer, usually added on top of an embedding layer.
+    Embeds information about the position of the elements using the formula.
 
     .. math::
 
@@ -24,7 +24,7 @@ class PositionalEncoding(tf.keras.layers.Layer):
     ---------
 
     - `max_sequence_length` (``int``): Maximum sequence length of input
-    - `embedding_dim` (``int``): Dimensionality of the of the input's last dimension
+    - `embedding_dim` (``int``): Dimensionality of the input's last dimension
     - `normalize_factor` (``float``): Normalize factor
     - `name` (``str``): Layer name
 
@@ -32,7 +32,8 @@ class PositionalEncoding(tf.keras.layers.Layer):
     Input shape
     -----------
 
-    (batch_size, time_steps, channels) where time_steps equals to the ``max_sequence_length`` and channels to ``embedding_dim``
+    (batch_size, time_steps, channels) where time_steps equals to the
+    ``max_sequence_length`` and channels to ``embedding_dim``
 
 
     Output shape
@@ -64,13 +65,13 @@ class PositionalEncoding(tf.keras.layers.Layer):
     """
 
     def __init__(self,
-                 normalize_factor: float = 10000,
+                 normalize_factor: float = 10_000,
                  name: str = 'positional_encoding',
                  **kwargs):
         """
 
         :param max_sequence_length: Maximum sequence length of input
-        :param embedding_dim: Dimensionality of the of the input's last dimension
+        :param embedding_dim: Dimensionality of the input's last dimension
         :param normalize_factor: Normalize factor
         :param name: Layer name
         """
@@ -84,7 +85,7 @@ class PositionalEncoding(tf.keras.layers.Layer):
 
         # First part of the PE function: sin and cos argument
         self.positional_encoding = np.array([
-            [pos / np.power(self.normalize_factor, 2. * i / embedding_dim) for i in range(embedding_dim)]
+            [pos / np.power(self.normalize_factor, 2 * (i // 2) / embedding_dim) for i in range(embedding_dim)]
             for pos in range(max_sequence_length)])
 
         # Second part, apply the cosine to even columns and sin to odds.
@@ -128,8 +129,8 @@ class PositionalEncoding(tf.keras.layers.Layer):
 class DynamicMetaEmbedding(tf.keras.layers.Layer):
     """
     Applies learned attention to different sets of embeddings matrices per token, to mix separate token
-    representations into a joined one. Self attention is word-dependent, meaning each word's representation in the output
-    is only dependent on the word's original embeddings in the given matrices, and the attention vector.
+    representations into a joined one. Self attention is word-dependent, meaning each word's representation in the
+    output is only dependent on the word's original embeddings in the given matrices, and the attention vector.
 
 
     Arguments
@@ -157,8 +158,9 @@ class DynamicMetaEmbedding(tf.keras.layers.Layer):
     Examples
     --------
 
-    Create Dynamic Meta Embeddings using 2 separate embedding matrices. Notice it is the user's responsibility to make sure
-    all the arguments needed in the embedding lookup are passed to the ``tf.keras.layers.Embedding`` constructors (like ``trainable=False``).
+    Create Dynamic Meta Embeddings using 2 separate embedding matrices. Notice it is the user's responsibility to make
+    sure all the arguments needed in the embedding lookup are passed to the ``tf.keras.layers.Embedding``
+    constructors (like ``trainable=False``).
 
     .. code-block:: python3
 
@@ -168,10 +170,10 @@ class DynamicMetaEmbedding(tf.keras.layers.Layer):
         w2v_embedding = np.array(...)  # Pre-trained embedding matrix
 
         glove_embedding = np.array(...)  # Pre-trained embedding matrix
-
+3
         model = tf.keras.Sequential([tf.keras.layers.Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32'),
                                      tvl.embeddings.DynamicMetaEmbedding([w2v_embedding, glove_embedding],
-                                                                         input_length=MAX_SEQUENCE_LENGTH)])  # Use DME embeddings
+                                                                         input_length=MAX_SEQUENCE_LENGTH)])
 
     Using the same example as above, it is possible to define the output's channel size
 
