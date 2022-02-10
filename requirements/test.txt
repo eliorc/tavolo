@@ -1,5 +1,0 @@
-pytest
-pytest-cov
-twine
-codecov
-tensorflow==2.5.0

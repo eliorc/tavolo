@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "tavolo"
+version = "0.8.0"
+description = "Collection of deep learning modules and layers for the TensorFlow framework"
+authors = ["elior <elior.cohen.p@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.6.2"
+tensorflow = "^2.5.3"
+numpy = "^1.19.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0.0"
+pytest-cov = "^3.0.0"
+codecov = "^2.1.12"
+pylint = "^2.12.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
