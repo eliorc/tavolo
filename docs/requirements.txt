@@ -6,3 +6,4 @@ pygments
 pygments-style-github
 tensorflow==2.7.2
 tavolo
+toml
