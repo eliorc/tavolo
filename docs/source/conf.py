@@ -33,6 +33,7 @@ release = tvl.__version__
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinxcontrib.httpdomain',
     'sphinx_tabs.tabs'
 ]
 
