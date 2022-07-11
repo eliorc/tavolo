@@ -16,10 +16,6 @@
     :target: https://codecov.io/gh/eliorc/tavolo
     :alt: Code test coverage
 
-.. image:: https://circleci.com/gh/eliorc/tavolo.svg?style=svg
-    :target: https://circleci.com/gh/eliorc/tavolo
-    :alt: CircleCI status
-
 Tavolo
 ======
 
