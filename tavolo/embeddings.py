@@ -101,10 +101,11 @@ class PositionalEncoding(tf.keras.layers.Layer):
 
         super().build(input_shape)
 
-    # noinspection
+    # noinspection PyMethodMayBeStatic, PyUnusedLocal
     def compute_mask(self, inputs, mask=None):
         return mask
 
+    # noinspection PyUnusedLocal
     def call(self, inputs,
              mask: Optional[tf.Tensor] = None,
              **kwargs) -> tf.Tensor:
@@ -243,12 +244,14 @@ class DynamicMetaEmbedding(tf.keras.layers.Layer):
                                                name='attention',
                                                dtype=self.dtype)
 
+    # noinspection PyMethodMayBeStatic, PyUnusedLocal
     def compute_mask(self, inputs, mask=None):
         if not self.mask_zero:
             return None
 
         return math_ops.not_equal(inputs, 0)
 
+    # noinspection PyUnusedLocal
     def call(self, inputs,
              **kwargs) -> tf.Tensor:
 
@@ -414,12 +417,14 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
                                                name='attention',
                                                dtype=self.dtype)
 
+    # noinspection PyMethodMayBeStatic, PyUnusedLocal
     def compute_mask(self, inputs, mask=None):
         if not self.mask_zero:
             return None
 
         return math_ops.not_equal(inputs, 0)
 
+    # noinspection PyUnusedLocal
     def call(self, inputs,
              **kwargs) -> tf.Tensor:
         batch_size, time_steps = inputs.shape[:2]
@@ -434,9 +439,11 @@ class ContextualDynamicMetaEmbedding(tf.keras.layers.Layer):
                                name='projected')  # shape=(batch_size, time_steps, n_embeddings, output_dim)
 
         # Contextualize
+        # noinspection LongLine
         context = self.bilstm(
             tf.reshape(projected, shape=(batch_size * self.n_embeddings, time_steps,
                                          self.output_dim)))  # shape=(batch_size * n_embeddings, time_steps, n_lstm_units*2)
+        # noinspection LongLine
         context = tf.reshape(context, shape=(batch_size, time_steps, self.n_embeddings,
                                              self.n_lstm_units * 2))  # shape=(batch_size, time_steps, n_embeddings, n_lstm_units*2)
 

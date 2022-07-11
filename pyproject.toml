@@ -6,8 +6,8 @@ authors = ["elior <elior.cohen.p@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.6.2"
-tensorflow = "^2.5.3"
+python = ">=3.7,<3.10"
+tensorflow = "^2.7.2"
 numpy = "^1.19.0"
 
 [tool.poetry.dev-dependencies]
