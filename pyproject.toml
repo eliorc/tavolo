@@ -9,6 +9,7 @@ license = "MIT"
 python = ">=3.7,<3.10"
 tensorflow = "^2.7.2"
 numpy = "^1.19.0"
+toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.0"
