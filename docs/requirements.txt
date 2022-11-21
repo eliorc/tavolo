@@ -4,6 +4,6 @@ sphinxcontrib-httpdomain
 sphinx_rtd_theme
 pygments
 pygments-style-github
-tensorflow==2.7.2
+tensorflow==2.9.3
 tavolo
 toml
